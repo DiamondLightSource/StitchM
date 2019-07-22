@@ -10,6 +10,7 @@ def normalise_images(images, exposure_minmax, good_image_list):
 
 
 def _image_value_trimmer(image_stack):
+    logging.debug("Trimming brightest pixels")
     new_stack = image_stack[:, :, :]
     median_std = np.median([np.std(image) for image in image_stack])
     median_median = np.median(image_stack)
@@ -23,6 +24,7 @@ def _exposure_correction(images, exposure_minmax, good_image_list):
     correct exposure when displaying it. This function uses this
     to correct for the exposure.
     """
+    logging.debug("Applying exposure correction")
     images_min = images[good_image_list].min()
     images_max = images[good_image_list].max()
     images_range = images_max - images_min
@@ -40,6 +42,7 @@ def _exposure_correction(images, exposure_minmax, good_image_list):
 
 
 def _rescale_corrected_imgs(corrected_images):
+    logging.debug("Re-scaling images to uint8")
     # Trim images before correction to avoid any speckles
     # leading to the entire image to be quite dark:
     corrected_images = np.asarray(

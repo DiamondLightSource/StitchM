@@ -6,11 +6,12 @@ from mrc_from_txt import TxtExtract
 from mrc_extractor import GetMrc
 from marker_maker import Marker
 from stitcher import Stitcher
+import logging
 import logger
 
 
 def main(args):
-
+    logging.debug(f"Running MosaicStitch with arguments {args}")
     if (args[0]) and (Path(args[0]).suffix == ".txt"):
         tiff_file = Path(args[0]).resolve().with_suffix(".tiff")
         with open(args[0], 'rb') as csvfile:

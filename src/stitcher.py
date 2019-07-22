@@ -29,10 +29,10 @@ class Stitcher():
                 good_image_list.append(i)
             else:
                 logging.debug(f"Median of image {i} (counted from 0) is not within the minimum threshold")
-                pass
         return good_image_list
 
     def make_mosaic(self):
+        logging.debug("Creating mosaic")
         if self.img_count == self.images.shape[0]:
             good_image_list = self.find_brightfield_images()
             # create new large array and load data into it from mosaic:
@@ -54,4 +54,5 @@ class Stitcher():
             # Rotate back
             return mosaic_array.T
         else:
+            logging.error("Number of images doesn't match between files")
             raise AssertionError("Number of images doesn't match between files")

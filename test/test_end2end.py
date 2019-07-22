@@ -28,7 +28,7 @@ class MosaicStitchTests(unittest.TestCase):
             if os.path.isfile(output_path):
                 os.remove(output_path)
 
-    def test_end_to_end(self):
+    def test_end_to_end_simple(self):
         for i in range(len(test_files)):
             test_file = test_files[i]
             stitch_main([test_file, ])
@@ -41,7 +41,7 @@ class MosaicStitchTests(unittest.TestCase):
 
             self.assertTrue((output_image == expected_image).all(), msg=f"Not true for {test_file}")
 
-    def test_end_to_end_with_markers(self):
+    def test_end2end_with_markers(self):
         for i in range(len(test_files)):
             test_file = test_files[i]
             stitch_main([test_file, test_marker_files[i]])
