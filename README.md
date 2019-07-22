@@ -18,5 +18,6 @@ To make a mosaic image that can be easily viewed and can be used for automatic a
 ### Copyright
 
 As Cockpit creates the images and accompanying files, so was referenced for the creation of this software. Cockpit can be found at "https://github.com/MicronOxford/cockpit".
+Additionally, Mrc.py and test_Mrc.py are from the B24 version of Cockpit in accordance with the GNU license.
 
 "Waukegan LDO" is a font created by Luke Owens (LILongJr@HotPOP.com), licensed as Freeware. It was downloaded from www.fontspace.com.
