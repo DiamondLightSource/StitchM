@@ -1,5 +1,5 @@
-import mrcfile
 from numpy import asarray
+from Mrc import bindFile
 
 
 class GetMrc():
@@ -15,8 +15,9 @@ class GetMrc():
 
     @staticmethod
     def extract_image(mrc_path):
-        # permissive allows this mrc file to be opened
-        # despite a "bad" header
-        with mrcfile.open(mrc_path, permissive=True) as mrc:
-            image = asarray(mrc.data, dtype='i')
+#         # permissive allows this mrc file to be opened
+#         # despite a "bad" header
+#         with mrcfile.open(mrc_path, permissive=True) as mrc:
+#             image = asarray(mrc.data, dtype='i')
+        image = bindFile(mrc_path)
         return image
