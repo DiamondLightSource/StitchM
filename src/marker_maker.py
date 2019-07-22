@@ -1,4 +1,5 @@
 import numpy as np
+import logging
 import re
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
@@ -17,8 +18,7 @@ class Marker():
 
     @staticmethod
     def is_marker_file(arg):
-        pattern = re.compile(r'(.*)marker(.*).txt$', flags=re.I)
-        if pattern.match(arg):
+        if re.match(arg, r'(.*)marker(.*).txt$', flags=re.I):
             return True
         else:
             return False
@@ -36,6 +36,7 @@ class Marker():
         return marker_coordinates
 
     def output_markers(self, mosaic):
+        logging.debug("Creating marker layer")
         markernum = 1
         annotations = Image.new('RGBA', mosaic.size, (0, 0, 0, 0))
         d = ImageDraw.Draw(annotations, mode='RGBA')
@@ -52,5 +53,6 @@ class Marker():
             d.text(text_loc, str(markernum), font=fnt, fill=(0, 255, 0, 255))
             markernum += 1
         im_out = Image.alpha_composite(mosaic, annotations)
+        logging.debug("Marker image created")
         return im_out
 

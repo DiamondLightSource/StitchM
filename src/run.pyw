@@ -7,5 +7,4 @@ for arg in sys.argv:
         args[1] = arg
     elif ".txt" in arg:
         args[0] = arg
-
 mosaic_stitch.main(args)
