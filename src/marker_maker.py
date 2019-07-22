@@ -18,7 +18,7 @@ class Marker():
 
     @staticmethod
     def is_marker_file(arg):
-        if re.match(arg, r'(.*)marker(.*).txt$', flags=re.I):
+        if re.match(r'(.*)marker(.*).txt$', arg, flags=re.I):
             return True
         else:
             return False
