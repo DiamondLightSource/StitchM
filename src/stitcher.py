@@ -1,45 +1,57 @@
 import numpy as np
-
 import logging
 
-from image_edge_definer import edge_definer
+from edge_definer import image_edge_definer
+from builtins import staticmethod
+from image_normaliser import normalise_images
 
 
 class Stitcher():
 
-    def __init__(self, image, img_params):
-        self.image = image
+    def __init__(self, images, img_params):
+        # x pixel order is backwards for each image:
+        self.images = images[:, ::-1, :]
+
         self.img_count = img_params["number_of_images"]
         self.boundaries = img_params["mosaic_boundaries"]
         self.pix_pos = img_params["pixel_positions"]
         self.exposures = img_params["exposures"]
-        self.ave_exposure = img_params["mean_exposure"]
+        self.exposure_minmax = img_params["exposure_black_white"]
         self.pix2edge = img_params["pixels_to_edge"]
 
-    @staticmethod
-    def normalise_exposure(image, exposure, target_exposure):
-        uint16max = np.iinfo("uint16").max
-        int8max = np.iinfo("uint8").max
-        multiplier = (target_exposure / exposure) * (int8max / uint16max)
-        return (image * multiplier)
+    def find_brightfield_images(self):
+        # This returns a list of "good" images i.e. not fluorescent images
+        median_max = np.median(self.exposure_minmax[:, 1])
+        std_max = np.std(self.exposure_minmax[:, 1])
+        good_image_list = []
+        for i in range(self.img_count):
+            if self.exposure_minmax[i, 1] > median_max - std_max:
+                good_image_list.append(i)
+            else:
+                logging.debug(f"Median of image {i} (counted from 0) is not within the minimum threshold")
+                pass
+        return good_image_list
 
     def make_mosaic(self):
-        if self.img_count == self.image.shape[0]:
-            # create new large array and load adat from mosaic into it.
+        if self.img_count == self.images.shape[0]:
+            good_image_list = self.find_brightfield_images()
+            # create new large array and load data into it from mosaic:
             mosaic_size = (self.boundaries[1, 0] - self.boundaries[0, 0],
                          self.boundaries[1, 1] - self.boundaries[0, 1])
-            mosaic_array = np.zeros(mosaic_size, dtype="uint8")
-            for i in range(self.img_count):
-                start, end = edge_definer(
-                    self.pix_pos[i, :],
+            mosaic_array = np.full(mosaic_size, 255, dtype="uint8")
+
+            normalised_images = normalise_images(self.images[:, :, :], self.exposure_minmax, good_image_list)
+
+            for i in range(len(good_image_list)):
+                start, end = image_edge_definer(
+                    self.pix_pos[good_image_list[i], :],
                     self.boundaries,
                     self.pix2edge
                     )
                 # Array needs to be transposed for python versus dv.
                 # This rotates each image so they line up correctly
-                normalised_image = self.normalise_exposure(self.image[i, ::-1, :], self.exposures[i], self.ave_exposure)
-                mosaic_array[start[0]:end[0], start[1]:end[1]] = normalised_image.T
+                mosaic_array[start[0]:end[0], start[1]:end[1]] = normalised_images[i, :, :].T
             # Rotate back
-            return mosaic_array.T.astype("uint8")
+            return mosaic_array.T
         else:
             raise AssertionError("Number of images doesn't match between files")

@@ -3,7 +3,7 @@ import re
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 
-from image_edge_definer import edge_definer
+from edge_definer import marker_edge_definer
 
 
 class Marker():
@@ -42,16 +42,15 @@ class Marker():
         src_path = Path(__file__).resolve()
         fnt = ImageFont.truetype(str(src_path.with_name("Waukegan LDO.ttf")), size=300)
         for marker in self.markerlist:
-            start, end = edge_definer(
+            start, end = marker_edge_definer(
                 marker,
                 self.boundaries,
                 self.pix2edge
                 )
-            text_loc = [loc + (self.pix2edge[0] // 4) for loc in start]
-            d.rectangle((start, end), fill=None, outline="red", width=15)
-            d.text(text_loc, str(markernum), font=fnt, fill="red")
+            text_loc = (start[0] + (self.pix2edge[0] // 4), start[1] + (self.pix2edge[1] // 4))
+            d.rectangle((start, end), fill=None, outline=(0, 255, 0, 255), width=20)
+            d.text(text_loc, str(markernum), font=fnt, fill=(0, 255, 0, 255))
             markernum += 1
-        assert(mosaic.size == annotations.size)
         im_out = Image.alpha_composite(mosaic, annotations)
         return im_out
 
