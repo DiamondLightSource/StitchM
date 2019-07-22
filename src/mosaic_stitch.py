@@ -1,12 +1,12 @@
 import sys
 from pathlib import Path
+from PIL import Image
 
 from mrc_from_txt import TxtExtract
 from mrc_extractor import GetMrc
-from marker_wrapper import Marker
+from marker_maker import Marker
 from stitcher import Stitcher
-
-from PIL import Image
+import logger
 
 
 def main(args):
@@ -20,7 +20,7 @@ def main(args):
             params = TxtExtract(csvfile).get_params()
 
         mosaic = Stitcher(image, params).make_mosaic()
-        mosaic_im = Image.fromarray(mosaic, 'L')
+        mosaic_im = Image.fromarray(mosaic, 'L').transpose(Image.FLIP_TOP_BOTTOM)
 
         if len(args) > 1 and Marker.is_marker_file(args[1]) and Path(args[1]).is_file():
             marked_path = str(tiff_file).replace(".tiff", "_marked.tiff")
@@ -28,10 +28,14 @@ def main(args):
             mosaic_rgba = mosaic_im.convert("RGBA")
             annotations = Marker(args[1], params).output_markers(mosaic_rgba)
 
-            mosaic_rgba.save(marked_path, format="tiff",
-                           save_all=True, append_images=[annotations, ],)
+            annotations.save(
+                marked_path, format="tiff",
+                save_all=True, append_images=[mosaic_rgba, ],
+                )
         else:
-            mosaic_im.save(str(tiff_file))
+            mosaic_im.save(
+                str(tiff_file), format="tiff"
+                )
 
     else:
         raise IOError("The first argument must be the text file, not {}".format(args[0]))
