@@ -1,5 +1,7 @@
 import logging
 
+import logger
+
 
 def image_edge_definer(pixel_positions, boundaries, pixels_to_edge):
     # mosaic image position coordinates are from the centre of each
@@ -10,7 +12,7 @@ def image_edge_definer(pixel_positions, boundaries, pixels_to_edge):
              position_on_mosaic[1] - pixels_to_edge[1])
     end = (position_on_mosaic[0] + pixels_to_edge[0],
            position_on_mosaic[1] + pixels_to_edge[1])
-    logging.info(f"Image edges defined as {start}, {end}")
+    logging.debug(f"Image edges defined as {start}, {end}")
     return start, end
 
 
@@ -26,5 +28,5 @@ def marker_edge_definer(pixel_positions, boundaries, pixels_to_edge):
              im_y_size - (position_on_mosaic[1]))
     end = (position_on_mosaic[0],
            im_y_size - (position_on_mosaic[1] - pixels_to_edge[1] * 2))
-    logging.info(f"Marker edges defined as {start}, {end}")
+    logging.debug(f"Marker edges defined as {start}, {end}")
     return start, end

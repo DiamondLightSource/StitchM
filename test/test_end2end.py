@@ -3,6 +3,7 @@ import os
 import tifffile as tf
 import numpy as np
 from PIL import Image
+from mock import MagicMock
 
 from mosaic_stitch import main as stitch_main
 
@@ -52,5 +53,5 @@ class MosaicStitchTests(unittest.TestCase):
             expected_file = expected_marked_outputs[i]
             expected_image = np.asarray(Image.open(expected_file))
 
-            self.assertTrue(output_image.all() == expected_image.all(), msg=f"Not true for {test_file}")
+            self.assertTrue((output_image == expected_image).all(), msg=f"Not true for {test_file}")
 

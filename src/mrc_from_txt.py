@@ -1,11 +1,13 @@
 import numpy as np
 import logging
 
+import logger
+
 
 class TxtExtract():
 
     def __init__(self, csvfile):
-        logging.debug(f"Importing image values from {csvfile}")
+        logging.info(f"Importing image values from {csvfile}")
         self._extract_values(csvfile)
         self._calculate_boundaries()
 
