@@ -1,6 +1,7 @@
 import numpy as np
 import logging
 
+import logger
 from edge_definer import image_edge_definer
 from builtins import staticmethod
 from image_normaliser import normalise_images
@@ -28,11 +29,11 @@ class Stitcher():
             if self.exposure_minmax[i, 1] > median_max - std_max:
                 good_image_list.append(i)
             else:
-                logging.debug(f"Median of image {i} (counted from 0) is not within the minimum threshold")
+                logging.info(f"Median of image {i} (counted from 0) is not within the minimum threshold")
         return good_image_list
 
     def make_mosaic(self):
-        logging.debug("Creating mosaic")
+        logging.info("Creating mosaic")
         if self.img_count == self.images.shape[0]:
             good_image_list = self.find_brightfield_images()
             # create new large array and load data into it from mosaic:

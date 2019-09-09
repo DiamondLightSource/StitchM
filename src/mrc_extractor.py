@@ -2,6 +2,8 @@ from numpy import asarray
 from Mrc import bindFile
 import logging
 
+import logger
+
 
 class GetMrc():
 
@@ -16,6 +18,6 @@ class GetMrc():
 
     @staticmethod
     def extract_image(mrc_path):
-        logging.debug(f"Opening mrc file at {mrc_path}")
+        logging.info(f"Opening mrc file at {mrc_path}")
         image = bindFile(mrc_path)
         return image
