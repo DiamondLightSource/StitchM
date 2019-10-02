@@ -1,23 +1,35 @@
 # MosaicStitch
-This was created to stitch together mosaic images taken in Cockpit (Micron) into a universally readable format, currently .tiff.
+This was created to stitch together mosaic images taken in Cockpit (Micron)
+into a universally readable format, currently '.ome.tiff'.
 
-The current output is an 8bit grayscale image when stitching the mosaic. In order to show an the marked regions, the image had to be exported in RGB with two layers (one with and one without the markers) to allow colour annotations and image matching without the annotations.
+The current output is an 16bit greyscale image when stitching the mosaic.
+Markers exported from Cockpit can be added as rectangular ROIs within the OME
+metadata stored in the image header. ROIs can be imported and displayed using
+bioformats in FIJI/ImageJ.
 
 ## Motivation
-To make a mosaic image that can be easily viewed and can be used for automatic alignment with a separate grid image (using gridSNAP).
+To make a mosaic image that can be easily viewed and can be used for automatic 
+alignment with a separate grid image (using gridSNAP).
 
 ## Features
-- [x] Working
+- [x] It works
 - [x] Creates tiff from .txt file that links to a .mrc
-- [x] Improved automatic exposure compensation
-- [x] Exposure trimming to remove extreme highlights before normalisation
+- [x] Applies exposure compensation from file values
+- [x] Slight exposure trimming to remove extreme highlights before normalisation
 - [x] Image normalisation
-- [x] Can add a tiff layer to show where microscopy data was taken.
+- [x] OME-TIFF metadata
+- [x] ROIs to show where data was taken (if markers used and exported)
 - [x] .bat file processing
 
 ### Copyright
 
-As Cockpit creates the images and accompanying files, so was referenced for the creation of this software. Cockpit can be found at "https://github.com/MicronOxford/cockpit".
-Additionally, Mrc.py and test_Mrc.py are from the B24 version of Cockpit in accordance with the GNU license.
+MosaicStitch is licensed under a BSD license, please see LICENSE file.
+Copyright (c) 2019, Diamond Light Source Ltd. All rights reserved.
 
-"Waukegan LDO" is a font created by Luke Owens (LILongJr@HotPOP.com), licensed as Freeware. It was downloaded from www.fontspace.com.
+omexml.py is modified from python-bioformats, a part of CellProfiler. It is
+also under a BSD license and can be found at
+https://github.com/CellProfiler/python-bioformats
+
+As Cockpit creates the images and accompanying files, so was referenced for the
+creation of this software. Cockpit is licensed under GNU and can be found at
+https://github.com/MicronOxford/cockpit
