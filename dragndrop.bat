@@ -1,3 +1,3 @@
-:: Adjust paths below to suit installation, plus remove PAUSE one working
-python src\run.pyw %*
+:: Adjust paths below to suit installation, plus remove PAUSE when working
+python src\run.py %*
 PAUSE

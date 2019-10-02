@@ -1,46 +1,37 @@
 import sys
 from pathlib import Path
-from PIL import Image
+import tifffile as tf
 import logging
 
 import logger
-from mrc_from_txt import TxtExtract
-from mrc_extractor import GetMrc
-from marker_maker import Marker
+from unstitched_image import UnstitchedImage
+from metadata_maker import MetadataMaker
 from stitcher import Stitcher
 from file_checker import *
 
 
 def main(args):
     logging.info(f"Running MosaicStitch with arguments {args}")
-    if (args[0]) and (Path(args[0]).suffix == ".txt"):
-        tiff_file = Path(args[0]).resolve().with_suffix(".tiff")
-        with open(args[0], 'rb') as csvfile:
-            # Open mrc image file:
-            image = GetMrc(csvfile).image
-            # Extract image parameters:
-            params = TxtExtract(csvfile).get_params()
+    arg0_path = Path(args[0]).resolve()  # Gets absolute path of args[0]
 
-        mosaic = Stitcher(image, params).make_mosaic()
-        mosaic_im = Image.fromarray(mosaic, 'L').transpose(Image.FLIP_TOP_BOTTOM)
+    if arg0_path.is_file() and (arg0_path.suffix == ".txt"):
+        tiff_file = str(arg0_path.with_suffix(".ome.tiff"))
+
+        unstitched = UnstitchedImage(arg0_path)
+        stitcher = Stitcher(datatype="uint16")
+        mosaic = stitcher.make_mosaic(unstitched)
+        metadata_creator = MetadataMaker(tiff_file, unstitched, stitcher.get_brightfield_list())
 
         if len(args) > 1 and is_marker_file(args[1]) and Path(args[1]).is_file():
-            marked_path = str(tiff_file).replace(".tiff", "_marked.tiff")
+            tiff_file = tiff_file.replace(".ome.tiff", "_marked.ome.tiff")
+            metadata_creator.add_markers(tiff_file, args[1])
 
-            mosaic_rgba = mosaic_im.convert("RGBA")
-            annotations = Marker(args[1], params).output_markers(mosaic_rgba)
-
-            annotations.save(
-                marked_path, format="tiff",
-                save_all=True, append_images=[mosaic_rgba, ],
-                )
-        else:
-            mosaic_im.save(
-                str(tiff_file), format="tiff"
-                )
+        with tf.TiffWriter(tiff_file) as tif:
+            tif.save(mosaic, description=metadata_creator.get(), metadata={'axes':'XYCZT'})
+            tif.close()
 
     else:
-        raise IOError("The first argument must be the text file, not {}".format(args[0]))
+        raise IOError("The first argument must be a text file, not {}".format(args[0]))
 
 
 if __name__ == "__main__":

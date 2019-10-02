@@ -2,7 +2,6 @@ import unittest
 import os
 import tifffile as tf
 import numpy as np
-from PIL import Image
 from mock import MagicMock
 
 from mosaic_stitch import main as stitch_main
@@ -13,8 +12,8 @@ test_marker_files = (base_path + "B15_location_markers.txt", base_path + "B8G1-I
 # test_files = (base_path + "Fid_T2G3_mosaic.txt",)  # reduced tuple for quick tests
 # test_marker_files = (base_path + "Fid_T2G3_markers.txt",)
 
-expected_outputs = [path.replace(".txt", "_expected_output.tiff") for path in test_files]
-expected_marked_outputs = [path.replace(".txt", "_expected_output_marked.tiff") for path in test_files]
+expected_outputs = [path.replace(".txt", "_expected_output.ome.tiff") for path in test_files]
+expected_marked_outputs = [path.replace(".txt", "_expected_output_marked.ome.tiff") for path in test_files]
 
 
 class MosaicStitchTests(unittest.TestCase):
@@ -22,10 +21,10 @@ class MosaicStitchTests(unittest.TestCase):
     @classmethod
     def tearDownClass(MosaicStitchTests):
         for file in test_files:
-            output_path = file.replace('.txt', '.tiff')
+            output_path = file.replace('.txt', '.ome.tiff')
             if os.path.isfile(output_path):
                 os.remove(output_path)
-            output_path = file.replace('.txt', '_marked.tiff')
+            output_path = file.replace('.txt', '_marked.ome.tiff')
             if os.path.isfile(output_path):
                 os.remove(output_path)
 
@@ -33,7 +32,7 @@ class MosaicStitchTests(unittest.TestCase):
         for i in range(len(test_files)):
             test_file = test_files[i]
             stitch_main([test_file, ])
-            output_path = test_file.replace('.txt', '.tiff')
+            output_path = test_file.replace('.txt', '.ome.tiff')
             self.assertTrue(os.path.isfile(output_path), msg=f"{output_path} not found")
             output_image = tf.imread(output_path)
 
@@ -46,12 +45,12 @@ class MosaicStitchTests(unittest.TestCase):
         for i in range(len(test_files)):
             test_file = test_files[i]
             stitch_main([test_file, test_marker_files[i]])
-            output_path = test_file.replace('.txt', '_marked.tiff')
+            output_path = test_file.replace('.txt', '_marked.ome.tiff')
             self.assertTrue(os.path.isfile(output_path), msg=f"{output_path} not found")
-            output_image = np.asarray(Image.open(output_path))
+            output_image = np.asarray(tf.imread(output_path))
 
             expected_file = expected_marked_outputs[i]
-            expected_image = np.asarray(Image.open(expected_file))
+            expected_image = np.asarray(tf.imread(expected_file))
 
             self.assertTrue((output_image == expected_image).all(), msg=f"Not true for {test_file}")
 
