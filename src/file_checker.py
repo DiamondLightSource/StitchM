@@ -23,7 +23,6 @@ def is_marker_file(arg):
     return marker_regex.match(arg)
 
 
-
 def is_mosaic_file(arg):
     if ".txt" in arg and os.path.exists(arg):
         with open(arg, 'rb') as csvfile:
