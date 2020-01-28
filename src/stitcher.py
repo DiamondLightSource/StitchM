@@ -56,4 +56,6 @@ class Stitcher():
                 image_list.append(i)
             else:
                 logging.info(f"Median of image {i} (counted from 0) is not within the minimum threshold")
-        return image_list
+        if len(image_list) > img_count / 2:
+            return image_list
+        return range(0, img_count)

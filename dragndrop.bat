@@ -1,3 +1,4 @@
+@Echo off
 :: Adjust paths below to suit installation, plus remove PAUSE when working
-python src\run.py %*
+python "%~dp0src\run.py" %*
 PAUSE
