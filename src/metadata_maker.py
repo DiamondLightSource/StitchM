@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import logging
 import datetime
@@ -20,7 +21,7 @@ class MetadataMaker():
         x_position, y_position = self.__get_x_y_position(self.boundaries, mosaic_dims, unstitched.pixel_size)
         physical_mosaic_dims = [dim * unstitched.pixel_size for dim in mosaic_dims]
         date_time = datetime.datetime.fromtimestamp(unstitched.modified_timestamp).isoformat()  # formatted as: "yyyy-mm-ddThh:mm:ss"
-        
+
         logging.info("Creating OME metadata")
         self.ox = OMEXML()
         image = self.ox.image()
@@ -38,9 +39,9 @@ class MetadataMaker():
         pixels.set_SizeC(1)
         pixels.set_SizeT(1)
         pixels.set_PhysicalSizeX(physical_mosaic_dims[0])
-        pixels.set_PhysicalSizeXUnit("nm")
+        pixels.set_PhysicalSizeXUnit("μm")
         pixels.set_PhysicalSizeY(physical_mosaic_dims[1])
-        pixels.set_PhysicalSizeYUnit("nm")
+        pixels.set_PhysicalSizeYUnit("μm")
         pixels.set_PhysicalSizeZ(1)  # Z doesn't have corresponding data
         pixels.set_PhysicalSizeZUnit("reference frame")
         pixels.set_plane_count(1)
@@ -56,8 +57,8 @@ class MetadataMaker():
         plane.set_TheZ(0)
         plane.set_TheC(0)
         plane.set_TheT(0)
-        plane.set_PositionXUnit("nm")
-        plane.set_PositionYUnit("nm")
+        plane.set_PositionXUnit("μm")
+        plane.set_PositionYUnit("μm")
         plane.set_PositionZUnit("reference frame")
         plane.set_PositionX(x_position)
         plane.set_PositionY(y_position)
