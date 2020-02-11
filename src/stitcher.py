@@ -1,7 +1,6 @@
 import numpy as np
 import logging
 
-import logger
 from edge_definer import image_edge_definer
 from image_normaliser import normalise_images
 

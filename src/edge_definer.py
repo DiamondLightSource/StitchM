@@ -1,7 +1,5 @@
 import logging
 
-import logger
-
 
 def image_edge_definer(pixel_positions, boundaries, pixels_to_edge):
     # Mosaic image position coordinates are from the centre of each

@@ -3,7 +3,6 @@ import numpy as np
 import logging
 import datetime
 
-import logger
 from omexml.omexml import OMEXML
 from edge_definer import marker_edge_definer
 
@@ -30,7 +29,7 @@ class MetadataMaker():
         image.set_AcquisitionDate(date_time)
 
         pixels = image.Pixels
-        pixels.set_DimensionOrder("XYCZT")
+        pixels.set_DimensionOrder("XYZCT")
         pixels.set_ID("0")
         pixels.set_PixelType("uint16")
         pixels.set_SizeX(mosaic_dims[0])
