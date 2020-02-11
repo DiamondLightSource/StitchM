@@ -27,7 +27,7 @@ def main(args):
             metadata_creator.add_markers(tiff_file, args[1])
 
         with tf.TiffWriter(tiff_file) as tif:
-            tif.save(mosaic, description=metadata_creator.get(), metadata={'axes':'XYCZT'})
+            tif.save(mosaic, description=metadata_creator.get(), metadata={'axes':'XYZ'})
             tif.close()
 
     else:
