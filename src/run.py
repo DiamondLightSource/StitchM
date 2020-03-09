@@ -1,11 +1,21 @@
 import sys
+import os
 import logging
+from configparser import ConfigParser
 
 import logger
 import mosaic_stitch
 from file_checker import argument_organiser
 
-logger.create_logger("debug")
+config = ConfigParser()
+with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config.cfg")) as f:
+    config.read_file(f)
+logger.create_logger(
+    config['LOGGING']['file level'],
+    config['LOGGING']['stream level'],
+    backup_count=10
+    )
+
 sys_args = sys.argv
 logging.info("Received: %s", sys_args)
 args = argument_organiser(sys_args[1:])
