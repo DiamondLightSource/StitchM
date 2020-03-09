@@ -21,12 +21,15 @@ logpath = Path("logs")
 LOG_FILE = logpath / "mosaicstitch_log"
 
 
-def create_logger(input_level="debug", backup_count=10):
+def create_logger(file_level="debug", stream_level="error", backup_count=10):
     """
     Creates a logging file handler that creates a new file daily at midnight, with up to 'backup_count' log files saved.
     This also sets logging for stdout to info level.
     
-    ACCEPTABLE INPUT LEVELS:
+    INPUTS:
+    file_level (string or int), stream_level (string or int), backup_count (int)
+    
+    ACCEPTABLE LOGGING LEVELS:
     debug OR 1
     info OR 2
     warn OR warning OR 3
@@ -37,11 +40,17 @@ def create_logger(input_level="debug", backup_count=10):
     """
     if not logpath.is_dir():
         logpath.mkdir(mode=0o777)
-    if input_level in level_dict:
-        level = level_dict[input_level]
+    if file_level in level_dict:
+        file_level = level_dict[file_level]
     else:
         # use debug if no valid logging level is passed
-        level = logging.DEBUG
+        file_level = logging.DEBUG
+        logging.error(f"Invalid logging level passed - see docstring")
+    if stream_level in level_dict:
+        stream_level = level_dict[stream_level]
+    else:
+        # use debug if no valid logging level is passed
+        stream_level = logging.ERROR
         logging.error(f"Invalid logging level passed - see docstring")
 
     stream_handler = logging.StreamHandler(sys.stdout)
@@ -53,8 +62,8 @@ def create_logger(input_level="debug", backup_count=10):
     file_handler.setFormatter(file_format)
 
     logger = logging.getLogger()
-    logger.setLevel(logging.ERROR)
-    stream_handler.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
+    stream_handler.setLevel(stream_level)
     logger.addHandler(stream_handler)
-    file_handler.setLevel(level)
+    file_handler.setLevel(file_level)
     logger.addHandler(file_handler)

@@ -12,10 +12,13 @@ class Stitcher():
         self.dtype = datatype
         self.brightfield_list = []
 
-    def make_mosaic(self, unstitched):
+    def make_mosaic(self, unstitched, filter=True):
         logging.info("Creating mosaic")
         if unstitched.img_count == unstitched.images.shape[0]:
-            self.brightfield_list = self._find_brightfield_images(unstitched.img_count, unstitched.exposure_minmax)
+            if filter:
+                self.brightfield_list = self._find_brightfield_images(unstitched.img_count, unstitched.exposure_minmax)
+            else:
+                self.brightfield_list = [i for i in range(unstitched.img_count)]
             # create new large array and load data into it from mosaic:
             mosaic_size = (unstitched.boundaries[1, 0] - unstitched.boundaries[0, 0],
                          unstitched.boundaries[1, 1] - unstitched.boundaries[0, 1])
