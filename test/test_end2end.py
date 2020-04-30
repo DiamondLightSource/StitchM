@@ -4,9 +4,9 @@ import tifffile as tf
 import numpy as np
 from mock import MagicMock
 
-from mosaic_stitch import main as stitch_main
+from stitch_m import main as stitch_main
 
-base_path = "/dls/science/groups/das/ExampleData/B24_test_data/MosaicStitch_test_data/files/"
+base_path = "/dls/science/groups/das/ExampleData/B24_test_data/StitchM_test_data/files/"
 test_files = (base_path + "B15Grid2.txt", base_path + "B8G1-IR_mosaic.txt", base_path + "B8G2-IR_mosaic.txt", base_path + "Fid_T2G3_mosaic.txt", base_path + "Yo10_G3_mosaic.txt")
 test_marker_files = (base_path + "B15_location_markers.txt", base_path + "B8G1-IR_markers.txt", base_path + "B8G2-IR_markers.txt", base_path + "Fid_T2G3_markers.txt", base_path + "Yo10_G3_mosaic_MARKERS.txt")
 # # Reduced tuple for quick tests:
@@ -17,10 +17,10 @@ expected_outputs = [path.replace(".txt", "_expected_output.ome.tiff") for path i
 expected_marked_outputs = [path.replace(".txt", "_expected_output_marked.ome.tiff") for path in test_files]
 
 
-class MosaicStitchTests(unittest.TestCase):
+class StitchMTests(unittest.TestCase):
 
     @classmethod
-    def tearDownClass(MosaicStitchTests):
+    def tearDownClass(StitchMTests):
         for file in test_files:
             output_path = file.replace('.txt', '.ome.tiff')
             if os.path.isfile(output_path):

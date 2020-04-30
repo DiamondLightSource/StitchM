@@ -1,0 +1,22 @@
+{   
+    "python.condaPath": "/dls_sw/apps/python/anaconda/4.6.14/64/bin/python",
+    "python.pythonPath": "/dls_sw/apps/python/anaconda/4.6.14/64/envs/python3.8/bin/python3",
+    "python.envFile": "${workspaceFolder}/.vscode/test.env",
+    "python.terminal.activateEnvironment": true,
+    "python.testing.nosetestArgs": [
+        "test",
+        "-v",
+        "--logging-level=INFO",
+    ],
+
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./test",
+        "-p",
+        "test_*.py"
+    ],
+}

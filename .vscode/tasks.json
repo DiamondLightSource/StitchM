@@ -1,0 +1,9 @@
+{
+    "version": "2.0.0",
+    "tasks": [{
+        "label": "load_modules",
+        "command": "module load global/cluster;module load imod/4.9",
+        "type": "shell"
+    },
+]
+}

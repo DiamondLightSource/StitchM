@@ -18,7 +18,7 @@ level_dict = {
     }
 
 logpath = Path("logs")
-LOG_FILE = logpath / "mosaicstitch_log"
+LOG_FILE = logpath / "stitch_m_log"
 
 
 def create_logger(file_level="debug", stream_level="error", backup_count=10):
