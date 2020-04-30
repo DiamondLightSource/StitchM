@@ -2,4 +2,6 @@
 /.pydevproject
 **/__pycache__
 *.pyc
-/mosaicstitch.log
+/logs
+/workspace.xml
+.idea

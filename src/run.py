@@ -4,7 +4,7 @@ import logging
 from configparser import ConfigParser
 
 import logger
-import mosaic_stitch
+import stitch_m
 from file_checker import argument_organiser
 
 config = ConfigParser()
@@ -22,4 +22,4 @@ args = argument_organiser(sys_args[1:])
 
 if args[0] is not None:
     logging.info(f"Sending files {args} to be stitched")
-    mosaic_stitch.main(args)
+    stitch_m.main(args)

@@ -1,4 +1,4 @@
-# MosaicStitch
+# StitchM
 This was created to stitch together mosaic images taken in Cockpit (Micron)
 into a universally readable format, currently '.ome.tiff'.
 
@@ -23,7 +23,7 @@ alignment with a separate grid image (using gridSNAP).
 
 ### Copyright
 
-MosaicStitch is licensed under a BSD license, please see LICENSE file.
+StitchM is licensed under a BSD license, please see LICENSE file.
 Copyright (c) 2019, Diamond Light Source Ltd. All rights reserved.
 
 omexml.py is modified from python-bioformats, a part of CellProfiler. It is

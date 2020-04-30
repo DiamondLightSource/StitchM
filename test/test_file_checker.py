@@ -2,7 +2,7 @@ import unittest
 from file_checker import *
 from nose.tools import assert_true
 
-base_path = "/dls/science/groups/das/ExampleData/B24_test_data/MosaicStitch_test_data/files/"
+base_path = "/dls/science/groups/das/ExampleData/B24_test_data/StitchM_test_data/files/"
 test_file = base_path + "Fid_T2G3_mosaic.txt"
 test_marker_file = base_path + "Fid_T2G3_markers.txt"
 bad_file = base_path + "bad_file.txt"

@@ -12,7 +12,7 @@ from file_checker import *
 
 
 def main(args):
-    logging.info(f"Running MosaicStitch with arguments {args}")
+    logging.info(f"Running StitchM with arguments {args}")
     arg0_path = Path(args[0]).resolve()  # Gets absolute path of args[0]
 
     config = ConfigParser()
