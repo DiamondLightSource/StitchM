@@ -2,9 +2,8 @@ import unittest
 import os
 import tifffile as tf
 import numpy as np
-from mock import MagicMock
 
-from stitch_m import main as stitch_main
+import stitch_m
 
 base_path = "/dls/science/groups/das/ExampleData/B24_test_data/StitchM_test_data/files/"
 test_files = (base_path + "B15Grid2.txt", base_path + "B8G1-IR_mosaic.txt", base_path + "B8G2-IR_mosaic.txt", base_path + "Fid_T2G3_mosaic.txt", base_path + "Yo10_G3_mosaic.txt")
@@ -20,7 +19,7 @@ expected_marked_outputs = [path.replace(".txt", "_expected_output_marked.ome.tif
 class StitchMTests(unittest.TestCase):
 
     @classmethod
-    def tearDownClass(StitchMTests):
+    def tearDownClass(cls):
         for file in test_files:
             output_path = file.replace('.txt', '.ome.tiff')
             if os.path.isfile(output_path):
@@ -30,28 +29,34 @@ class StitchMTests(unittest.TestCase):
                 os.remove(output_path)
 
     def test_end_to_end_simple(self):
-        for i in range(len(test_files)):
-            test_file = test_files[i]
-            stitch_main([test_file, ])
-            output_path = test_file.replace('.txt', '.ome.tiff')
-            self.assertTrue(os.path.isfile(output_path), msg=f"{output_path} not found")
-            output_image = tf.imread(output_path)
+        if os.path.exists(base_path):
+            for i in range(len(test_files)):
+                test_file = test_files[i]
+                stitch_m.stitch(test_file)
+                output_path = test_file.replace('.txt', '.ome.tiff')
+                self.assertTrue(os.path.isfile(output_path), msg=f"{output_path} not found")
+                output_image = tf.imread(output_path)
 
-            expected_file = expected_outputs[i]
-            expected_image = tf.imread(expected_file)
+                expected_file = expected_outputs[i]
+                expected_image = tf.imread(expected_file)
 
-            self.assertTrue((output_image == expected_image).all(), msg=f"Not true for {test_file}")
+                self.assertTrue((output_image == expected_image).all(), msg=f"Not true for {test_file}")
+        else:
+            print("Cannot run test without access to dls directories")
 
     def test_end2end_with_markers(self):
-        for i in range(len(test_files)):
-            test_file = test_files[i]
-            stitch_main([test_file, test_marker_files[i]])
-            output_path = test_file.replace('.txt', '_marked.ome.tiff')
-            self.assertTrue(os.path.isfile(output_path), msg=f"{output_path} not found")
-            output_image = np.asarray(tf.imread(output_path))
+        if os.path.exists(base_path):
+            for i in range(len(test_files)):
+                test_file = test_files[i]
+                stitch_m.stitch(test_file, test_marker_files[i])
+                output_path = test_file.replace('.txt', '_marked.ome.tiff')
+                self.assertTrue(os.path.isfile(output_path), msg=f"{output_path} not found")
+                output_image = np.asarray(tf.imread(output_path))
 
-            expected_file = expected_marked_outputs[i]
-            expected_image = np.asarray(tf.imread(expected_file))
+                expected_file = expected_marked_outputs[i]
+                expected_image = np.asarray(tf.imread(expected_file))
 
-            self.assertTrue((output_image == expected_image).all(), msg=f"Not true for {test_file}")
+                self.assertTrue((output_image == expected_image).all(), msg=f"Not true for {test_file}")
+        else:
+            print("Cannot run test without access to dls directories")
 

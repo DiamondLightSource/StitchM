@@ -1,8 +1,8 @@
 import numpy as np
 import logging
 
-from edge_definer import image_edge_definer
-from image_normaliser import normalise_images
+from .edge_definer import image_edge_definer
+from .image_normaliser import normalise_images
 
 
 class Stitcher():
@@ -24,7 +24,8 @@ class Stitcher():
                          unstitched.boundaries[1, 1] - unstitched.boundaries[0, 1])
             mosaic_array = np.full(mosaic_size, np.iinfo(self.dtype).max, dtype=self.dtype)
 
-            normalised_images = normalise_images(unstitched.images, unstitched.exposure_minmax, self.brightfield_list, self.dtype)
+            normalised_images = normalise_images(
+                unstitched.images, unstitched.exposure_minmax, self.brightfield_list, self.dtype)
 
             for i in range(len(self.brightfield_list)):
                 start, end = image_edge_definer(
@@ -57,7 +58,7 @@ class Stitcher():
             if minmax[i, 1] > median_max - std_max:
                 image_list.append(i)
             else:
-                logging.info(f"Median of image {i} (counted from 0) is not within the minimum threshold")
+                logging.info("Median of image %i (counted from 0) is not within the minimum threshold", i)
         if len(image_list) > img_count / 2:
             return image_list
         return range(0, img_count)

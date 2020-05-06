@@ -1,7 +1,9 @@
+import os
 import sys
 from pathlib import Path
 import logging
 from logging.handlers import TimedRotatingFileHandler
+
 
 level_dict = {
     "1": logging.DEBUG,
@@ -20,8 +22,18 @@ level_dict = {
 logpath = Path("logs")
 LOG_FILE = logpath / "stitch_m_log"
 
+def setup_logging(config, config_messages):
+    create_logger(
+        config['LOGGING']['file level'],
+        config['LOGGING']['stream level'],
+        backup_count=10
+        )
+    # Create logger with defaults and log issue
+    create_logger()
+    for message in config_messages:
+        logging.warning(message)
 
-def create_logger(file_level="debug", stream_level="error", backup_count=10):
+def create_logger(file_level="debug", stream_level="info", backup_count=10):
     """
     Creates a logging file handler that creates a new file daily at midnight, with up to 'backup_count' log files saved.
     This also sets logging for stdout to info level.
@@ -45,16 +57,16 @@ def create_logger(file_level="debug", stream_level="error", backup_count=10):
     else:
         # use debug if no valid logging level is passed
         file_level = logging.DEBUG
-        logging.error(f"Invalid logging level passed - see docstring")
+        logging.error("Invalid logging level passed - see docstring")
     if stream_level in level_dict:
         stream_level = level_dict[stream_level]
     else:
         # use debug if no valid logging level is passed
         stream_level = logging.ERROR
-        logging.error(f"Invalid logging level passed - see docstring")
+        logging.error("Invalid logging level passed - see docstring")
 
     stream_handler = logging.StreamHandler(sys.stdout)
-    stream_format = logging.Formatter("%(levelname)-8s %(filename)s|%(funcName)s: %(message)s")
+    stream_format = logging.Formatter("%(levelname)-8s %(message)s")
     stream_handler.setFormatter(stream_format)
 
     file_handler = TimedRotatingFileHandler(str(LOG_FILE), when='midnight', interval=1, backupCount=backup_count)

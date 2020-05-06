@@ -1,5 +1,5 @@
 # StitchM
-This was created to stitch together mosaic images taken in Cockpit (Micron)
+StitchM stitches together mosaic images taken in Cockpit (Micron)
 into a universally readable format, currently '.ome.tiff'.
 
 The current output is an 16bit greyscale image when stitching the mosaic.
@@ -12,14 +12,17 @@ To make a mosaic image that can be easily viewed and can be used for automatic
 alignment with a separate grid image (using gridSNAP).
 
 ## Features
-- [x] It works
 - [x] Creates tiff from .txt file that links to a .mrc
-- [x] Applies exposure compensation from file values
-- [x] Slight exposure trimming to remove extreme highlights before normalisation
+- [x] Applies exposure compensation from .txt file values
+- [x] Slight exposure trimming to remove extreme highlights
 - [x] Image normalisation
 - [x] OME-TIFF metadata
-- [x] ROIs to show where data was taken (if markers used and exported)
-- [x] .bat file processing
+- [x] Supports regions of interests (ROIs) if markers have been placed and exported to a separate .txt file
+- [x] Drag and drop (.bat) processing of a single mosaic (accepts additional ROI file, not batch processing)
+- [x] Filtering to attempt to remove fluorecence images (optional in config file)
+- [x] Logging level for log file and terminal interface can be separately set in config file
+- [x] Command line script interface ("StitchM -h" for details)
+- [x] Python module entry point
 
 ### Copyright
 
