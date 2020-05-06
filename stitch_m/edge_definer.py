@@ -10,7 +10,7 @@ def image_edge_definer(pixel_positions, boundaries, pixels_to_edge):
              position_on_mosaic[1] - pixels_to_edge[1])
     end = (position_on_mosaic[0] + pixels_to_edge[0],
            position_on_mosaic[1] + pixels_to_edge[1])
-    logging.debug(f"Image edges defined as {start}, {end}")
+    logging.debug("Image edges defined as (%i, %i), (%i, %i)", *start, *end)
     return start, end
 
 
@@ -26,5 +26,5 @@ def marker_edge_definer(pixel_positions, boundaries, pixels_to_edge):
              im_y_size - (position_on_mosaic[1]))
     end = (position_on_mosaic[0],
            im_y_size - (position_on_mosaic[1] - pixels_to_edge[1] * 2))
-    logging.debug(f"Marker edges defined as {start}, {end}")
+    logging.debug("Marker edges defined as (%i, %i), (%i, %i)", *start, *end)
     return start, end

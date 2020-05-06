@@ -3,8 +3,8 @@ import numpy as np
 import logging
 import datetime
 
-from omexml.omexml import OMEXML
-from edge_definer import marker_edge_definer
+from .omexml import omexml
+from .edge_definer import marker_edge_definer
 
 
 class MetadataMaker():
@@ -22,7 +22,7 @@ class MetadataMaker():
         date_time = datetime.datetime.fromtimestamp(unstitched.modified_timestamp).isoformat()  # formatted as: "yyyy-mm-ddThh:mm:ss"
 
         logging.info("Creating OME metadata")
-        self.ox = OMEXML()
+        self.ox = omexml.OMEXML()
         image = self.ox.image()
         image.set_Name(image_name)
         image.set_ID("0")
