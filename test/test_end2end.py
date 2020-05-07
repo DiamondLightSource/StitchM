@@ -16,6 +16,7 @@ test_marker_files = (base_path + "B15_location_markers.txt", base_path + "B8G1-I
 
 expected_outputs = [path.replace(".txt", "_expected_output.ome.tiff") for path in test_files]
 expected_marked_outputs = [path.replace(".txt", "_expected_output_marked.ome.tiff") for path in test_files]
+test_config = Path(__file__).resolve().with_name("config.cfg")
 
 
 class StitchMTests(unittest.TestCase):
@@ -30,9 +31,9 @@ class StitchMTests(unittest.TestCase):
             if os.path.isfile(output_path):
                 os.remove(output_path)
 
-    @patch('stitch_m.file_handler.local_config_file')
-    def test_end_to_end_simple(self, mocked_local_config):
-        mocked_local_config = Path(__file__).resolve().with_name("config.cfg")
+    @patch('stitch_m.file_handler')
+    def test_end_to_end_simple(self, mocked_file_handler):
+        mocked_file_handler.local_config_file.return_value = test_config
         if os.path.exists(base_path):
             for i in range(len(test_files)):
                 test_file = test_files[i]
@@ -48,9 +49,9 @@ class StitchMTests(unittest.TestCase):
         else:
             print("Cannot run test without access to dls directories")
 
-    @patch('stitch_m.file_handler.local_config_file')
-    def test_end2end_with_markers(self, mocked_local_config):
-        mocked_local_config = Path(__file__).resolve().with_name("config.cfg")
+    @patch('stitch_m.file_handler')
+    def test_end2end_with_markers(self, mocked_file_handler):
+        mocked_file_handler.local_config_file.return_value = test_config
         if os.path.exists(base_path):
             for i in range(len(test_files)):
                 test_file = test_files[i]

@@ -3,7 +3,6 @@ import unittest
 from unittest.mock import patch, MagicMock, ANY
 
 import stitch_m
-from stitch_m.logger import create_logger
 
 
 class TestEntryPointStitch(unittest.TestCase):

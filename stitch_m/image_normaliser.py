@@ -43,7 +43,7 @@ def _exposure_correction(images, exposure_minmax, brightfield_image_list):
 
 
 def _rescale_corrected_imgs(corrected_images, datatype):
-    logging.info("Re-scaling images to {datatype}")
+    logging.info("Re-scaling images to %s", datatype)
     # Trim images before correction to avoid any speckles
     # leading to the entire image to be quite dark:
     corrected_images = np.asarray(
