@@ -24,14 +24,14 @@ alignment with a separate grid image (using gridSNAP).
 - [x] Command line script interface ("StitchM -h" for details)
 - [x] Python module entry point
 
-### Copyright
+## Copyright
 
 StitchM is licensed under a BSD license, please see LICENSE file.
 Copyright (c) 2019, Diamond Light Source Ltd. All rights reserved.
 
-omexml.py is modified from python-bioformats, a part of CellProfiler. It is
-also under a BSD license and can be found at
-https://github.com/CellProfiler/python-bioformats
+## Additional information
+
+StitchM uses [OME metadata](https://docs.openmicroscopy.org/ome-model/6.0.0/).
 
 As Cockpit creates the images and accompanying files, so was referenced for the
 creation of this software. Cockpit is licensed under GNU and can be found at

@@ -10,6 +10,7 @@ requirements=[
     "tifffile",
     "mrcfile",
     "numpy",
+    "omexml-dls",
     "pywin32;platform_system=='Windows'"
     ]
 
