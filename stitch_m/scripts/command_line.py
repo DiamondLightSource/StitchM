@@ -43,7 +43,7 @@ def cl_run():
             create_user_config()
         if not args.windows_shortcut and not args.config:
            setup_parser.print_help()
-        sys.exit()
+        return
 
     # Empty strings are False
     if args.mosaic:

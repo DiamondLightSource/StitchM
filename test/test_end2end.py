@@ -1,7 +1,9 @@
 import unittest
+from unittest.mock import patch
 import os
 import tifffile as tf
 import numpy as np
+from pathlib import Path
 
 import stitch_m
 
@@ -28,7 +30,9 @@ class StitchMTests(unittest.TestCase):
             if os.path.isfile(output_path):
                 os.remove(output_path)
 
-    def test_end_to_end_simple(self):
+    @patch('stitch_m.file_handler.local_config_file')
+    def test_end_to_end_simple(self, mocked_local_config):
+        mocked_local_config = Path(__file__).resolve().with_name("config.cfg")
         if os.path.exists(base_path):
             for i in range(len(test_files)):
                 test_file = test_files[i]
@@ -44,7 +48,9 @@ class StitchMTests(unittest.TestCase):
         else:
             print("Cannot run test without access to dls directories")
 
-    def test_end2end_with_markers(self):
+    @patch('stitch_m.file_handler.local_config_file')
+    def test_end2end_with_markers(self, mocked_local_config):
+        mocked_local_config = Path(__file__).resolve().with_name("config.cfg")
         if os.path.exists(base_path):
             for i in range(len(test_files)):
                 test_file = test_files[i]

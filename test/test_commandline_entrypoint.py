@@ -38,8 +38,7 @@ class TestEntryPointCommandline(unittest.TestCase):
     @patch('argparse.ArgumentParser.print_help')
     def test_command_line_function_setup_subpaser(self, mocked_printhelp):
         sys.argv = ["StitchM", "setup"]
-        with self.assertRaises(SystemExit):
-            command_line.cl_run()
+        command_line.cl_run()
 
         mocked_printhelp.assert_called_once()
 
@@ -48,8 +47,7 @@ class TestEntryPointCommandline(unittest.TestCase):
         local_config_file = Path(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "stitch_m", "config.cfg"))
 
         sys.argv = ["StitchM", "setup", "--config"]
-        with self.assertRaises(SystemExit):
-            command_line.cl_run()
+        command_line.cl_run()
 
         mocked_config_creator.assert_called_once()
 
@@ -59,8 +57,7 @@ class TestEntryPointCommandline(unittest.TestCase):
         local_config_file = Path(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "stitch_m", "config.cfg"))
 
         sys.argv = ["StitchM", "setup", "-win"]
-        with self.assertRaises(SystemExit):
-            command_line.cl_run()
+        command_line.cl_run()
         
         mocked_shortcut_creator.assert_called_once()
 
