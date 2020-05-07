@@ -94,7 +94,7 @@ class TestEntryPointCommandline(unittest.TestCase):
         run_args = ["StitchM", "--version"]
         output = subprocess.run(run_args, capture_output=True)
         stdout = output.stdout.decode('utf8').strip("\r\n").strip("\n")
-        self.assertEquals(f"StitchM {stitch_m.__version__}", stdout, msg=f"Actual stdout: {stdout}")
+        self.assertEqual(f"StitchM {stitch_m.__version__}", stdout, msg=f"Actual stdout: {stdout}")
 
     def test_command_line_method_setup_subparser(self):
         run_args = ["StitchM", "setup"]

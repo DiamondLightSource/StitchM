@@ -20,6 +20,7 @@ def sort_args_then_run():
                 create_Windows_shortcut()
             if create_win_shortcut:
                 create_user_config()
+            logging.getLogger(__name__).handlers.clear()
 
         config, config_messages = get_config()
         setup_logging(config, config_messages)

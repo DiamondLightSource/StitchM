@@ -23,13 +23,16 @@ logpath = Path("logs")
 LOG_FILE = logpath / "stitch_m_log"
 
 def setup_logging(config, config_messages):
-    create_logger(
-        config['LOGGING']['file level'],
-        config['LOGGING']['stream level'],
-        backup_count=10
-        )
-    # Create logger with defaults and log issue
-    create_logger()
+    try:
+        create_logger(
+            config['LOGGING']['file level'],
+            config['LOGGING']['stream level'],
+            backup_count=10
+            )
+    except:
+        config_messages.append("Error retrieving logging levels from config file.")
+        # Create logger with defaults and log issue
+        create_logger()
     for message in config_messages:
         logging.warning(message)
 
@@ -73,7 +76,7 @@ def create_logger(file_level="debug", stream_level="info", backup_count=10):
     file_format = logging.Formatter("%(asctime)s %(levelname)-8s %(filename)s|%(funcName)s: %(message)s", datefmt="%d %b %Y - %H:%M:%S")
     file_handler.setFormatter(file_format)
 
-    logger = logging.getLogger()
+    logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     stream_handler.setLevel(stream_level)
     logger.addHandler(stream_handler)
