@@ -31,14 +31,11 @@ def sort_args_then_run():
                 args = args[0:2]
             main_run(config, *args)
         else:
-            exit_status = 1
             logging.error("No valid mosaic file")
             if config['OTHER']['wait upon completion'] == 'true':
                 input("Press any key to exit")
     except:
-        exit_status = 1
         logging.error("Unknown error occurred", exc_info=True)
-    sys.exit(exit_status)
 
 
 def main_run(config, mosaic, markers=None):
@@ -85,4 +82,3 @@ def main_run(config, mosaic, markers=None):
 
     if config['OTHER']['wait upon completion'] == 'true':
         input("Press any key to exit")
-        sys.exit(exit_status)
