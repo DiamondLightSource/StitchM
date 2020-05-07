@@ -18,8 +18,6 @@ class TestEntryPointCommandline(unittest.TestCase):
 # `pip uninstall StitchM`
 # IF TESTING ON WINDOWS: make sure the correct python installation is set as the default in PATH
 
-
-
     @classmethod
     def setUpClass(cls):
         # Set maximum difference string length to None (infinite)
