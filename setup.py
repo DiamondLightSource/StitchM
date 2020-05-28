@@ -1,7 +1,9 @@
-import os
+from os import path
+import sys
 import setuptools
 
 from stitch_m import __version__, __author__
+from stitch_m.file_handler import dragndrop_bat_file
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -14,6 +16,14 @@ requirements=[
     "pywin32;platform_system=='Windows'"
     ]
 
+batch_script_string = f"""{sys.executable} -m stitch_m %*
+"""
+
+if dragndrop_bat_file.exists():
+    dragndrop_bat_file.unlink()
+with open(dragndrop_bat_file, "x") as f:
+    f.write(batch_script_string)
+
 setuptools.setup(
     name="StitchM",
     version=__version__,
@@ -22,7 +32,7 @@ setuptools.setup(
     description="A package for stitching mosaics from Cockpit with (or without) ROIs",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    license_file="LICENSE",
+    license_files=["LICENSE",],
     url="https://github.com/DiamondLightSource/StitchM",
     install_requires=requirements,
     packages=setuptools.find_packages(exclude=("test", "scripts")),

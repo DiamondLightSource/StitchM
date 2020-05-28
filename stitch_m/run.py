@@ -23,6 +23,7 @@ def sort_args_then_run():
             logging.getLogger(__name__).handlers.clear()
 
         config, config_messages = get_config()
+        wait_on_fail = config.getboolean('OTHER', 'wait upon failure', fallback='true')
         setup_logging(config, config_messages)
         logging.info("StitchM given arguments: %s", argv)
         args = argument_organiser(argv)
@@ -33,11 +34,48 @@ def sort_args_then_run():
             main_run(config, *args)
         else:
             logging.error("No valid mosaic file")
-            if config['OTHER']['wait upon completion'] == 'true':
-                input("Press any key to exit")
+        if wait_on_fail:
+            input("Processing failed! Press enter to exit")
     except:
         logging.error("Unknown error occurred", exc_info=True)
+        if wait_on_fail:
+            input("Processing failed! Press enter to exit")
 
+def _stitch(config, mosaic, markers):
+    from pathlib import Path
+    try:
+        if is_mosaic_file(mosaic):
+            mosaic_path = Path(mosaic).resolve()  # Gets absolute path of mosaic file
+            tiff_filename = str(mosaic_path.with_suffix(".ome.tiff"))
+
+            unstitched = UnstitchedImage(mosaic_path)
+            stitcher = Stitcher(datatype="uint16")
+            mosaic = stitcher.make_mosaic(unstitched, config.getboolean('PROCESSING', 'filter', fallback='true'))
+            metadata_creator = MetadataMaker(tiff_filename, unstitched, stitcher.get_brightfield_list())
+
+            if markers is not None and is_marker_file(markers) and Path(markers).is_file():
+                tiff_filename = tiff_filename.replace(".ome.tiff", "_marked.ome.tiff")
+                metadata_creator.add_markers(tiff_filename, markers)
+            return mosaic, metadata_creator.get(), tiff_filename
+        else:
+            logging.error("Mosaic file path cannot be resolved")
+            raise IOError("Mosaic file path cannot be resolved")
+    except:
+        logging.error("Invalid arguments: %s, %s", mosaic, markers, exc_info=True)
+        if config.getboolean('OTHER', 'wait upon failure', fallback='true'):
+            input("Processing failed! Press enter to exit")
+        raise IOError("Invalid arguments: {}, {}".format(mosaic, markers))
+    
+
+def _save(mosaic, metadata, tiff_filename):
+    import tifffile as tf
+    try:
+        logging.info("Saving %s", tiff_filename)
+        with tf.TiffWriter(tiff_filename) as tif:
+            tif.save(mosaic, description=metadata.to_xml().encode(), metadata={'axes':'XYZCT'})
+    except:
+        logging.error("Cannot save: %s", tiff_filename, exc_info=True)
+        raise IOError("Cannot save: {}".format(tiff_filename))
 
 def main_run(config, mosaic, markers=None):
     """
@@ -47,39 +85,14 @@ def main_run(config, mosaic, markers=None):
     
     The output will be saved as the mosaic filename, with the suffix '.ome.tiff' (or '_marked.ome.tiff' if markers are supplied), in same directory as the mosaic file.
     """
-    import os
-    from pathlib import Path
-    from configparser import ConfigParser
-    import tifffile as tf
-    
     logging.info("Running StitchM with arguments: mosaic=%s, markers=%s", mosaic, markers)
     try:
-        if is_mosaic_file(mosaic):
-            mosaic_path = Path(mosaic).resolve()  # Gets absolute path of mosaic file
-            tiff_file = str(mosaic_path.with_suffix(".ome.tiff"))
-
-            unstitched = UnstitchedImage(mosaic_path)
-            stitcher = Stitcher(datatype="uint16")
-            mosaic = stitcher.make_mosaic(unstitched, config['PROCESSING']['filter'] == 'true')
-            metadata_creator = MetadataMaker(tiff_file, unstitched, stitcher.get_brightfield_list())
-
-            if markers is not None and is_marker_file(markers) and Path(markers).is_file():
-                tiff_file = tiff_file.replace(".ome.tiff", "_marked.ome.tiff")
-                metadata_creator.add_markers(tiff_file, markers)
-
-            with tf.TiffWriter(tiff_file) as tif:
-                tif.save(mosaic, description=metadata_creator.get(), metadata={'axes':'XYZCT'})
-                tif.close()
-                exit_status = 0
-        else:
-            raise IOError("Mosaic file path cannot be resolved")
+        mosaic, metadata, tiff_file = _stitch(config, mosaic, markers)
+        _save(mosaic, metadata, tiff_file)
+        wait_on_complete = config.getboolean('OTHER', 'wait upon completion', fallback='false')
+        if wait_on_complete:
+            input("Processing complete. Press enter to exit")
     except:
-        exit_status = 1
-        if markers is not None:
-            logging.error("Invalid arguments: %s, %s", mosaic, markers, exc_info=True)
-            raise IOError("Invalid arguments: {}, {}".format(mosaic, markers))
-        logging.error("Invalid argument: %s", mosaic, exc_info=True)
-        raise IOError("Invalid argument: {}".format(mosaic))
-
-    if config['OTHER']['wait upon completion'] == 'true':
-        input("Press any key to exit")
+        logging.error('Error has occurred while stitching or saving mosaic. Please see traceback for more info.', exc_info=True)
+        if config.getboolean('OTHER', 'wait upon failure', fallback='true'):
+            input("Processing failed! Press enter to exit")
