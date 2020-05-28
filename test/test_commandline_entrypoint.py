@@ -4,7 +4,8 @@ import unittest
 from pathlib import Path
 from io import StringIO
 from unittest.mock import patch, MagicMock, ANY
-import subprocess
+from subprocess import Popen, PIPE, STDOUT
+from time import sleep
 
 import stitch_m
 from stitch_m import __version__
@@ -56,7 +57,7 @@ class TestEntryPointCommandline(unittest.TestCase):
 
         sys.argv = ["StitchM", "setup", "-win"]
         command_line.cl_run()
-        
+
         mocked_shortcut_creator.assert_called_once()
 
     @patch('stitch_m.scripts.command_line.main_run')
@@ -72,32 +73,42 @@ class TestEntryPointCommandline(unittest.TestCase):
     def test_command_line_method(self):
         args = ["path_to/mosaic"]
         run_args = ["StitchM", "--mosaic", args[0]]
-        output = subprocess.run(run_args, capture_output=True)
-        stdout = output.stdout.decode('utf8').strip("\r\n").strip("\n")
-        self.assertIn(f"Invalid argument: {args[0]}", stdout, msg=f"Actual stdout: {stdout}")
+        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+            sleep(2)
+            stdout, _ = p.communicate("pressed key", timeout=5)
+        stdout = stdout.strip("\r\n").strip("\n")
+        self.assertIn(f"Invalid arguments: {args[0]}, None", stdout, msg=f"Actual stdout: {stdout}")
 
     def test_command_line_method_invalid_path(self):
         args = ["path_to/mosaic.txt"]
         run_args = ["StitchM", "--mosaic", args[0]]
-        output = subprocess.run(run_args, capture_output=True)
-        stdout = output.stdout.decode('utf8').strip("\r\n").strip("\n")
+        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+            sleep(2)
+            stdout, _ = p.communicate("pressed key", timeout=5)
+        stdout = stdout.strip("\r\n").strip("\n")
         self.assertIn(f"Mosaic file path cannot be resolved", stdout, msg=f"Actual stdout: {stdout}")
 
     def test_command_line_method_with_marker_file(self):
         args = ["path_to/mosaic", "path_to/markers"]
         run_args = ["StitchM", "--mosaic", args[0], "--markers", args[1]]
-        output = subprocess.run(run_args, capture_output=True)
-        stdout = output.stdout.decode('utf8').strip("\r\n").strip("\n")
+        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+            sleep(2)
+            stdout, _ = p.communicate("pressed key", timeout=5)
+        stdout = stdout.strip("\r\n").strip("\n")
         self.assertIn(f"Invalid arguments: {args[0]}, {args[1]}", stdout, msg=f"Actual stdout: {stdout}")
 
     def test_command_line_method_version_number(self):
         run_args = ["StitchM", "--version"]
-        output = subprocess.run(run_args, capture_output=True)
-        stdout = output.stdout.decode('utf8').strip("\r\n").strip("\n")
+        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+            sleep(2)
+            stdout, _ = p.communicate("pressed key", timeout=5)
+        stdout = stdout.strip("\r\n").strip("\n")
         self.assertEqual(f"StitchM {stitch_m.__version__}", stdout, msg=f"Actual stdout: {stdout}")
 
     def test_command_line_method_setup_subparser(self):
         run_args = ["StitchM", "setup"]
-        output = subprocess.run(run_args, capture_output=True)
-        stdout = output.stdout.decode('utf8').strip("\r\n").strip("\n")
+        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+            sleep(2)
+            stdout, _ = p.communicate("pressed key", timeout=5)
+        stdout = stdout.strip("\r\n").strip("\n")
         self.assertIn(f"StitchM setup [-win] [-cfg] [-h]", stdout, msg=f"Actual stdout: {stdout}")

@@ -6,6 +6,7 @@ import numpy as np
 from pathlib import Path
 
 import stitch_m
+from stitch_m import file_handler
 
 base_path = "/dls/science/groups/das/ExampleData/B24_test_data/StitchM_test_data/files/"
 test_files = (base_path + "B15Grid2.txt", base_path + "B8G1-IR_mosaic.txt", base_path + "B8G2-IR_mosaic.txt", base_path + "Fid_T2G3_mosaic.txt", base_path + "Yo10_G3_mosaic.txt")
@@ -37,7 +38,7 @@ class StitchMTests(unittest.TestCase):
         if os.path.exists(base_path):
             for i in range(len(test_files)):
                 test_file = test_files[i]
-                stitch_m.stitch(test_file)
+                stitch_m.stitch_and_save(test_file)
                 output_path = test_file.replace('.txt', '.ome.tiff')
                 self.assertTrue(os.path.isfile(output_path), msg=f"{output_path} not found")
                 output_image = tf.imread(output_path)
@@ -55,7 +56,7 @@ class StitchMTests(unittest.TestCase):
         if os.path.exists(base_path):
             for i in range(len(test_files)):
                 test_file = test_files[i]
-                stitch_m.stitch(test_file, test_marker_files[i])
+                stitch_m.stitch_and_save(test_file, test_marker_files[i])
                 output_path = test_file.replace('.txt', '_marked.ome.tiff')
                 self.assertTrue(os.path.isfile(output_path), msg=f"{output_path} not found")
                 output_image = np.asarray(tf.imread(output_path))

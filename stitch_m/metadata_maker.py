@@ -4,6 +4,7 @@ import logging
 import datetime
 
 import oxdls
+
 from .edge_definer import marker_edge_definer
 
 
@@ -99,19 +100,19 @@ class MetadataMaker():
             rectangle.set_TheC(0)
             rectangle.set_TheT(0)
 
-#                 Colour is set using RGBA to int conversion
-#                 RGB colours: Red=-16776961, Green=16711935, Blue=65535
-#                 Calculated the following function from https://docs.openmicroscopy.org/omero/5.5.1/developers/Python.html:
-#                 def rgba_to_int(red, green, blue, alpha=255):
-#                     # Return the color as an Integer in RGBA encoding
-#                     r = red << 24
-#                     g = green << 16
-#                     b = blue << 8
-#                     a = alpha
-#                     rgba_int = r+g+b+a
-#                     if (rgba_int > (2**31-1)):       # convert to signed 32-bit int
-#                         rgba_int = rgba_int - 2**32
-#                     return rgba_int
+            # Colour is set using RGBA to int conversion
+            # RGB colours: Red=-16776961, Green=16711935, Blue=65535
+            # Calculated the following function from https://docs.openmicroscopy.org/omero/5.5.1/developers/Python.html:
+            # def rgba_to_int(red, green, blue, alpha=255):
+            #     # Return the color as an Integer in RGBA encoding
+            #     r = red << 24
+            #     g = green << 16
+            #     b = blue << 8
+            #     a = alpha
+            #     rgba_int = r+g+b+a
+            #     if (rgba_int > (2**31-1)):       # convert to signed 32-bit int
+            #         rgba_int = rgba_int - 2**32
+            #     return rgba_int
             rectangle.set_StrokeColor(-16776961)  # Red
             rectangle.set_StrokeWidth(20)
             rectangle.set_X(start[0])
@@ -119,11 +120,14 @@ class MetadataMaker():
             rectangle.set_Width(end[0] - start[0])
             rectangle.set_Height(end[1] - start[1])
 
-    def get(self):
-        if self.ox is None:
-            logging.error("Cannot get metadata that has not yet been created.")
-        else:
-            return self.ox.to_xml().encode()
+    def get(self, encoded=False):
+        if self.ox is not None:
+            if encoded:
+                return self.ox.to_xml().encode()
+            else:
+                return self.ox
+        logging.error("Cannot get metadata that has not yet been created.")
+        return self.ox
 
     def __extract_markers(self, markerfile):
         # returns marker coordinates in pixels

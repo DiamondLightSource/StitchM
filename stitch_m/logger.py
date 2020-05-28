@@ -23,14 +23,15 @@ logpath = Path("logs")
 LOG_FILE = logpath / "stitch_m_log"
 
 def setup_logging(config, config_messages):
+    from configparser import Error as ConfigError
     try:
         create_logger(
-            config['LOGGING']['file level'],
-            config['LOGGING']['stream level'],
+            config.get('LOGGING', 'file level'),
+            config.get('LOGGING', 'stream level'),
             backup_count=10
             )
-    except:
-        config_messages.append("Error retrieving logging levels from config file.")
+    except ConfigError:
+        config_messages.append("Error retrieving logging levels from config file. Using verbose settings.", exc_info=True)
         # Create logger with defaults and log issue
         create_logger()
     for message in config_messages:

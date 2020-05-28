@@ -22,12 +22,13 @@ alignment with a separate grid image (using gridSNAP).
 - [x] Filtering to attempt to remove fluorecence images (optional in config file)
 - [x] Logging level for log file and terminal interface can be separately set in config file
 - [x] Command line script interface ("StitchM -h" for details)
-- [x] Python module entry point
+- [x] Python module entry point (`python -m stitch_m *args*`)
+- [x] Python package (main functions for import `from stitch_m import stitch_and_save, stitch, save`)
 
 ## Copyright
 
 StitchM is licensed under a BSD license, please see LICENSE file.
-Copyright (c) 2019, Diamond Light Source Ltd. All rights reserved.
+Copyright (c) 2019-2020, Diamond Light Source Ltd. All rights reserved.
 
 ## Additional information
 
