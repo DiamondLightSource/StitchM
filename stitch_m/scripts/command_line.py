@@ -18,13 +18,13 @@ def cl_run():
     parser = argparse.ArgumentParser(prog="StitchM", description=description, add_help=False)
     
     stitch_group = parser.add_argument_group("Stitching arguments")
-    stitch_group.add_argument("--mosaic", metavar="PATH/TO/MOSAIC_FILE.TXT", type=str, default="", action='store', help="the mosaic to be stitched (.txt file)")
-    stitch_group.add_argument("--markers", metavar="PATH/TO/MARKER_FILE.TXT", type=str, default="", action='store', help="[OPTIONAL] the markers to be added as ROIs (.txt file)")
+    stitch_group.add_argument("-m", "--mosaic", metavar="PATH/TO/MOSAIC_FILE.TXT", dest="mosaic", type=str, default="", action='store', help="the mosaic to be stitched (.txt file)")
+    stitch_group.add_argument("-a", "--markers", metavar="PATH/TO/MARKER_FILE.TXT", dest="markers", type=str, default="", action='store', help="[OPTIONAL] the markers to be added as ROIs (.txt file)")
 
     setup_subparsers = parser.add_subparsers(title="Setup options", description="enter `StitchM setup -h` for details")
     setup_parser = setup_subparsers.add_parser(name="setup", add_help=False)
-    setup_parser.add_argument("-win", "--windows-shortcut", action='store_true', help="creates a Windows shortcut on the user's desktop that accepts drag and dropped files (one mosaic at a time, optionally including markers)")
-    setup_parser.add_argument("-cfg", "--config", action='store_true', help="creates a user specific config if called")
+    setup_parser.add_argument("-w", "--windows-shortcut", dest="windows_shortcut", action='store_true', help="creates a Windows shortcut on the user's desktop that accepts drag and dropped files (one mosaic at a time, optionally including markers)")
+    setup_parser.add_argument("-c", "--config", dest="config", action='store_true', help="creates a user specific config if called")
     setup_info_group = setup_parser.add_argument_group("Setup info")
     setup_info_group.add_argument('-h', '--help', action='help', help="show this help message and exit")
 

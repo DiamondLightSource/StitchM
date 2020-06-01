@@ -7,6 +7,8 @@ Markers exported from Cockpit can be added as rectangular ROIs within the OME
 metadata stored in the image header. ROIs can be imported and displayed using
 bioformats in FIJI/ImageJ.
 
+**To use command line script: `StitchM --help` and `StitchM setup --help` to get options and info**
+
 ## Motivation
 To make a mosaic image that can be easily viewed and can be used for automatic 
 alignment with a separate grid image (using gridSNAP).
