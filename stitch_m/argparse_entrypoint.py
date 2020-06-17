@@ -4,12 +4,10 @@ import sys
 import logging
 import argparse
 
-from stitch_m import __version__
-from stitch_m.run import main_run
-from stitch_m.logger import setup_logging, create_logger
-from stitch_m.file_handler import get_config, get_user_config_path, create_user_config, create_Windows_shortcut
+def main():
+    from .__init__ import __version__
+    from .file_handler import get_user_config_path
 
-def cl_run():
     description = "Stitch mosaics from Cockpit with (or without) ROIs."
     config_path, _ = get_user_config_path()
     if config_path is not None and config_path.exists():
@@ -36,10 +34,13 @@ def cl_run():
 
     # if args has the attribute 'config', the setup subparser has been called and args.win will also exist
     if hasattr(args, 'config'):
+        from .logger import create_logger
         create_logger("info", "info")
         if args.windows_shortcut:
+            from .file_handler import create_Windows_shortcut
             create_Windows_shortcut()
         if args.config:
+            from .file_handler import create_user_config
             create_user_config()
         if not args.windows_shortcut and not args.config:
            setup_parser.print_help()
@@ -47,6 +48,10 @@ def cl_run():
 
     # Empty strings are False
     if args.mosaic:
+        from .file_handler import get_config
+        from .logger import setup_logging
+        from .run import main_run
+        
         config, config_messages = get_config()
         setup_logging(config, config_messages)
         if args.markers:

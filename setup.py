@@ -45,7 +45,7 @@ setuptools.setup(
     python_requires='>=3.6',
     entry_points={
         'console_scripts': [
-            "StitchM = stitch_m.scripts.command_line:cl_run"
+            "StitchM = stitch_m.scripts.commandline:main"
             ]
             },
 )
