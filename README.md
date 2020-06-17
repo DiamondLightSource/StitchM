@@ -7,7 +7,14 @@ Markers exported from Cockpit can be added as rectangular ROIs within the OME
 metadata stored in the image header. ROIs can be imported and displayed using
 bioformats in FIJI/ImageJ.
 
-**To use command line script: `StitchM --help` and `StitchM setup --help` to get options and info**
+## Installation
+Using pip: `python -m pip install StitchM`
+Coming soon on conda-forge (also as `StitchM`)
+
+## Using StitchM:
+To use command line script: `StitchM --help` and `StitchM setup --help` to get options and info
+To import into python: `import stitch_m` or `from stitch_m import stitch_and_save, stitch, save` depending on usage
+
 
 ## Motivation
 To make a mosaic image that can be easily viewed and can be used for automatic 
