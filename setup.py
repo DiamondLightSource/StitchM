@@ -48,4 +48,6 @@ setuptools.setup(
             "StitchM = stitch_m.scripts.commandline:main"
             ]
             },
+    test_suite='tests',
+    tests_require=[]
 )

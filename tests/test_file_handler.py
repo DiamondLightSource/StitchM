@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 import os
 from pathlib import Path
+
 from stitch_m import file_handler
 
 base_path = "/dls/science/groups/das/ExampleData/B24_test_data/StitchM_test_data/files/"
