@@ -123,6 +123,9 @@ def _create_lnk_file(shortcut_path):
     shortcut = shell.CreateShortCut(str(shortcut_path))
     shortcut.Targetpath = str(dragndrop_bat_file)
     shortcut.save()
+    msg = f"Shortcut created! It can be found here: {shortcut_path}"
+    print(msg)
+    logging.info(msg)
 
 
 def create_Windows_shortcut():
@@ -147,5 +150,3 @@ def create_Windows_shortcut():
                 logging.info("Invalid input: %s. The existing shortcut will not be modified.", user_input)
                 return
         _create_lnk_file(shortcut_path)
-        print(f"Desktop shortcut created! It can be found here: {shortcut_path}")
-        logging.info("Desktop shortcut created! It can be found here: %s", str(shortcut_path))

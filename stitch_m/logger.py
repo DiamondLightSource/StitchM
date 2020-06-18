@@ -19,7 +19,7 @@ level_dict = {
     "critical": logging.CRITICAL,
     }
 
-logpath = Path("logs")
+logpath = Path(__file__).parent / "logs"
 LOG_FILE = logpath / "stitch_m_log"
 
 def setup_logging(config, config_messages):

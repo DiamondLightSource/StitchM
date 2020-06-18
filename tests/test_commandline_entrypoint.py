@@ -7,8 +7,7 @@ from unittest.mock import patch, MagicMock, ANY
 from subprocess import Popen, PIPE, STDOUT
 from time import sleep
 
-import stitch_m
-from stitch_m import __version__
+from stitch_m.__init__ import __version__ as version
 
 from stitch_m.scripts import commandline
 
@@ -103,7 +102,7 @@ class TestEntryPointCommandline(unittest.TestCase):
             sleep(2)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
-        self.assertEqual(f"StitchM {stitch_m.__version__}", stdout, msg=f"Actual stdout: {stdout}")
+        self.assertEqual(f"StitchM {version}", stdout, msg=f"Actual stdout: {stdout}")
 
     def test_commandline_method_setup_subparser(self):
         run_args = ["StitchM", "setup"]
