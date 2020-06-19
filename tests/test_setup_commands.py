@@ -33,7 +33,8 @@ class TestSetupFunctions(unittest.TestCase):
                 create_user_config()
                 mocked_copyfile.assert_called_once_with(local_config_file, user_config_location)
             else:
-                with patch('stitch_m.file_handler.get_user_config_path', MagicMock(return_value=(Path(stitch_m.__file__).parent / "test_config_path", " "))):
+                user_config_location = Path(stitch_m.__file__).parent / "test_config_path"
+                with patch('stitch_m.file_handler.get_user_config_path', MagicMock(return_value=(user_config_location, " "))):
                     create_user_config()
                     mocked_copyfile.assert_called_once_with(local_config_file, user_config_location)
 
