@@ -19,19 +19,23 @@ class TestSetupFunctions(unittest.TestCase):
     # ------------------
     # Test config setup:
 
-    @patch('shutil.copyfile')
-    def test_setup_config(self, mocked_copyfile):
-        local_config_file = Path(stitch_m.__file__).resolve().with_name("config.cfg")
-        if os.name == "posix":
-            user_config_location = Path(os.path.expanduser("~/.config/stitch_m/config.cfg"))
-        elif os.name == "nt":
-            user_config_location = Path(os.path.expanduser("~/AppData/Local/stitch_m/config.cfg"))
-        else:
-            raise OSError
-
-        create_user_config()
-
-        mocked_copyfile.assert_called_once_with(local_config_file, user_config_location)
+    
+    def test_setup_config(self):
+        with patch('shutil.copyfile', MagicMock()) as mocked_copyfile:
+            local_config_file = Path(stitch_m.__file__).resolve().with_name("config.cfg")
+            if os.name == "posix":
+                user_config_location = Path(os.path.expanduser("~/.config/stitch_m/config.cfg"))
+            elif os.name == "nt":
+                user_config_location = Path(os.path.expanduser("~/AppData/Local/stitch_m/config.cfg"))
+            else:
+                raise OSError
+            if user_config_location.parent.parent.exists():
+                create_user_config()
+                mocked_copyfile.assert_called_once_with(local_config_file, user_config_location)
+            else:
+                with patch('stitch_m.file_handler.get_user_config_path', MagicMock(return_value=Path(stitch_m.__file__).parent / "test_config_path")):
+                    create_user_config()
+                    mocked_copyfile.assert_called_once_with(local_config_file, user_config_location)
 
     @patch('stitch_m.file_handler.get_user_config_path')
     @patch('logging.error')
