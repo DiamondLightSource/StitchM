@@ -16,7 +16,6 @@ build:
   skip: True  # [py<35]
 
 requirements:
-
   build:
     - python
     - setuptools
@@ -24,10 +23,8 @@ requirements:
     - python
     - pip
     - numpy >=1.17.4
-
   run:
     - python
-    - {{ pin_compatible('numpy') }}
     - tifffile >=2019.7.26
     - mrcfile >=1.1.2
     - omexml-dls >=1.0.3
@@ -46,7 +43,7 @@ about:
   home: https://github.com/DiamondLightSource/{{ name }}
   license: BSD-3-Clause
   license_family: BSD
-  license_file: LICENSE.txt
+  license_file: LICENSE
   summary: 'Stitches mosaic images from Cockpit (Micron)'
 
   description: |
