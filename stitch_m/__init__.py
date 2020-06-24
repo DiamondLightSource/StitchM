@@ -12,7 +12,8 @@ def stitch_and_save(mosaic_file, marker_file=None):
     """
     import logging
 
-    from .run import main_run, get_config
+    from .run import main_run
+    from .file_handler import get_config
     from .logger import setup_logging
     
     config, config_messages = get_config()
@@ -32,7 +33,8 @@ def stitch(mosaic_file, marker_file=None):
     """
     import logging
 
-    from .run import _stitch, get_config
+    from .run import _stitch
+    from .file_handler import get_config
     from .logger import setup_logging
     
     config, config_messages = get_config()
@@ -50,7 +52,8 @@ def save(mosaic, metadata, tiff_file):
     """
     import logging
 
-    from .run import _save, get_config
+    from .run import _save
+    from .file_handler import get_config
     from .logger import setup_logging
     
     config, config_messages = get_config()

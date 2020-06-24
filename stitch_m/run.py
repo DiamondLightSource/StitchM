@@ -2,13 +2,9 @@ import os
 import sys
 import logging
 
-from .logger import setup_logging, create_logger
-from .unstitched_image import UnstitchedImage
-from .metadata_maker import MetadataMaker
-from .stitcher import Stitcher
-from .file_handler import is_mosaic_file, is_marker_file, argument_organiser, get_config, create_user_config, create_Windows_shortcut
-
 def sort_args_then_run():
+    from .logger import setup_logging, create_logger
+    from .file_handler import argument_organiser, get_config, create_user_config, create_Windows_shortcut
     try:
         argv = sys.argv[1:]
         # Allows setup options without StitchM script interface:
@@ -43,6 +39,10 @@ def sort_args_then_run():
 
 def _stitch(config, mosaic, markers):
     from pathlib import Path
+    from .file_handler import is_mosaic_file, is_marker_file
+    from .unstitched_image import UnstitchedImage
+    from .metadata_maker import MetadataMaker
+    from .stitcher import Stitcher
     try:
         if is_mosaic_file(mosaic):
             mosaic_path = Path(mosaic).resolve()  # Gets absolute path of mosaic file

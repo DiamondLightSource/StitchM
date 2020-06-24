@@ -1,10 +1,8 @@
 import os
 from os import path
 from pathlib import Path
-from numpy import genfromtxt
 import re
 import logging
- 
 from configparser import ConfigParser
 
 marker_regex = re.compile(r'(.*)marker(.*).txt$', flags=re.I)
@@ -41,7 +39,8 @@ def get_mrc_file(arg, return_array=False):
         csvfile.seek(0)
         filepath = path.abspath(csvfile.readline().rstrip().decode('utf-8'))
         if return_array:
-             location_array = genfromtxt(csvfile, delimiter=",")
+            from numpy import genfromtxt
+            location_array = genfromtxt(csvfile, delimiter=",")
     if ".mrc" in filepath.lower():
         if not path.exists(filepath):
             logging.warning("Cannot find path %s", filepath)
