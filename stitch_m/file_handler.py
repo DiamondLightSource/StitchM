@@ -63,10 +63,22 @@ def get_mrc_file(arg, return_array=False):
     raise IOError(f"Expected an mrc file, instead the txt file linked to {filepath}")
 
 
+def _get_Windows_home_path():
+    try:
+        home = Path(os.getenv("HOMEPATH"))
+    except:
+        logging.warning("Cannot find environment variable 'HOMEPATH', using Path.home() instead")
+        home = Path.home()
+    if "Users" in str(home):
+        return home
+    else:
+        logging.error("Cannot find valid home path. The following path was found: '%s'", str(home))
+        raise OSError(f"Cannot find valid home path. The following path was found: '{str(home)}''")
+
 def get_user_config_path():
     logging_messages = []
     if os.name == "nt":
-        user_config_path = Path.home() / "AppData" / "Local" / "stitch_m" / "config.cfg"
+        user_config_path = _get_Windows_home_path() / "AppData" / "Local" / "stitch_m" / "config.cfg"
     elif os.name == "posix":
         user_config_path = Path.home() / ".config" / "stitch_m" / "config.cfg"
     else:
@@ -133,7 +145,7 @@ def create_Windows_shortcut():
         return 
     else:
         # Place link on users desktop
-        shortcut_path = Path.home() / "Desktop" / "StitchM.lnk"
+        shortcut_path = _get_Windows_home_path() / "Desktop" / "StitchM.lnk"
         msg = f"Creating shortcut on user desktop: {shortcut_path}"
         logging.info(msg)
         if path.exists(shortcut_path):
