@@ -1,6 +1,7 @@
 import os
 import sys
 import unittest
+import pathlib
 from pathlib import Path
 from unittest.mock import patch, MagicMock, ANY
 import subprocess
@@ -55,16 +56,17 @@ class TestSetupFunctions(unittest.TestCase):
         create_Windows_shortcut()
         mocked_error_log.assert_called_once_with("This command is only valid on Windows installations.")
 
-    def test_setup_windows_shortcut_function_called(self):
-        # Only run this test if on Windows
-        if os.name == "nt":
-            with patch('stitch_m.file_handler._create_lnk_file', MagicMock()) as mocked_shortcut_creator:
-                create_Windows_shortcut()
+    @patch.object(pathlib.Path, "exists", MagicMock(return_value=False))
+    @patch('logging.error')
+    def test_setup_windows_shortcut_function_called(self, mocked_error):
+        with patch('stitch_m.file_handler._create_lnk_file', MagicMock()) as mocked_shortcut_creator:
+            create_Windows_shortcut()
+            if os.name == "nt":
                 mocked_shortcut_creator.assert_called_once_with(Path(os.environ["HOMEDRIVE"]) / os.environ["HOMEPATH"] / "Desktop" / "StitchM.lnk")
-    
+            else:
+                mocked_error.assert_called_once_with("This command is only valid on Windows installations.")
 
-    @patch('stitch_m.file_handler._create_lnk_file')
-    def test_setup_windows_shortcut_test_created_(self, mocked_shortcut_creator):
+    def test_setup_windows_shortcut_test_created_(self):
         # Only run this test if on Windows
         if os.name == "nt":
             test_shortcut_path = Path(".") / "test_shortcut.lnk"
