@@ -40,34 +40,30 @@ class TestEntryPointCommandline(unittest.TestCase):
 
         mocked_printhelp.assert_called_once()
 
-    @patch('stitch_m.file_handler.create_user_config')
-    def test_commandline_function_setup_config(self, mocked_config_creator):
+    def test_commandline_function_setup_config(self):
         local_config_file = Path(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "stitch_m", "config.cfg"))
+        with patch('stitch_m.file_handler.create_user_config', MagicMock()) as mocked_config_creator:
+            sys.argv = ["StitchM", "setup", "--config"]
+            commandline.main()
 
-        sys.argv = ["StitchM", "setup", "--config"]
-        commandline.main()
+            mocked_config_creator.assert_called_once()
 
-        mocked_config_creator.assert_called_once()
-
-
-    @patch('stitch_m.file_handler.create_Windows_shortcut')
-    def test_commandline_function_setup_windows_shortcut(self, mocked_shortcut_creator):
+    def test_commandline_function_setup_windows_shortcut(self):
         local_config_file = Path(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "stitch_m", "config.cfg"))
+        with patch('stitch_m.file_handler.create_Windows_shortcut', MagicMock()) as mocked_shortcut_creator:
+            sys.argv = ["StitchM", "setup", "-w"]
+            commandline.main()
 
-        sys.argv = ["StitchM", "setup", "-w"]
-        commandline.main()
+            mocked_shortcut_creator.assert_called_once()
 
-        mocked_shortcut_creator.assert_called_once()
+    def test_commandline_function_with_args(self, ):
+        with patch('stitch_m.run.main_run', MagicMock()) as main_run:
+            mosaic_arg = "mosaic_path"
+            marker_arg = "marker_path"
+            sys.argv =["StitchM", "--mosaic", mosaic_arg, "--markers", marker_arg]
+            commandline.main()
 
-    @patch('stitch_m.run.main_run')
-    def test_commandline_function_with_args(self, main_run):
-        main_run.return_value = None
-        mosaic_arg = "mosaic_path"
-        marker_arg = "marker_path"
-        sys.argv =["StitchM", "--mosaic", mosaic_arg, "--markers", marker_arg]
-        commandline.main()
-
-        main_run.assert_called_once_with(ANY, mosaic_arg, marker_arg)
+            main_run.assert_called_once_with(ANY, mosaic_arg, marker_arg)
 
     def test_commandline_method(self):
         args = ["path_to/mosaic"]

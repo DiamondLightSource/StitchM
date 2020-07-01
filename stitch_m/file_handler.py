@@ -64,16 +64,24 @@ def get_mrc_file(arg, return_array=False):
 
 
 def _get_Windows_home_path():
-    try:
-        home = Path(os.getenv("HOMEPATH")).resolve()
-    except:
-        logging.warning("Cannot find environment variable 'HOMEPATH', using Path.home() instead")
-        home = Path.home()
-    if "Users" in str(home):
-        return home
-    else:
-        logging.error("Cannot find valid home path. The following path was found: '%s'", str(home))
-        raise OSError(f"Cannot find valid home path. The following path was found: '{str(home)}''")
+    home = os.getenv("USERPROFILE")
+    if home is None:
+        homedrive = os.getenv("HOMEDRIVE")
+        homepath = os.getenv("HOMEPATH")
+        if homedrive and homepath:
+            home = os.path.join(homedrive, homepath)
+        else:
+            home = os.getenv("HOME")
+
+    if home is not None and "Users" in home:
+        try:
+            home_path = Path(home).resolve(strict=True)
+            return home_path
+        except FileNotFoundError:
+            pass
+    logging.error("Cannot find valid home path. The following path was found: '%s'", home)
+    raise FileNotFoundError(f"Cannot find valid home path. The following path was found: '{home}''")
+
 
 def get_user_config_path():
     logging_messages = []
@@ -148,8 +156,8 @@ def create_Windows_shortcut():
         shortcut_path = _get_Windows_home_path() / "Desktop" / "StitchM.lnk"
         msg = f"Creating shortcut on user desktop: {shortcut_path}"
         logging.info(msg)
-        if path.exists(shortcut_path):
-            msg = "StitchM shortcut already found. Are you sure you want to replace it? (y/N)"
+        if shortcut_path.exists():
+            msg = f"StitchM shortcut found:'{shortcut_path}'. Are you sure you want to replace it? (y/N)"
             user_input = str(input(msg))
             logging.debug(msg)
             logging.debug("User input: %s", user_input)
