@@ -3,13 +3,11 @@ from os import path
 from pathlib import Path
 import re
 import logging
-from configparser import ConfigParser
 
 marker_regex = re.compile(r'(.*)marker(.*).txt$', flags=re.I)
 
 local_config_file = Path(__file__).resolve().with_name("config.cfg")
 dragndrop_bat_file = Path(__file__).resolve().parent / "scripts" / "dragndrop.bat"
-
 
 def is_marker_file(arg):
     return marker_regex.match(path.basename(arg))
@@ -83,12 +81,35 @@ def _get_Windows_home_path():
     raise FileNotFoundError(f"Cannot find valid home path. The following path was found: '{home}''")
 
 
+def get_user_log_path():
+    try:
+        if os.name == "nt":
+            user_log_path = _get_Windows_home_path() / "AppData" / "Local" / "Temp" / "stitchm"
+            # Windows options are read-only or read and write (default), so no mode set
+            user_log_path.mkdir(exist_ok=True)
+        elif os.name == "posix":
+            from tempfile import mkdtemp
+            from getpass import getuser
+            # Makes user only access dir:
+            user_log_path = Path(mkdtemp(prefix=f"stitchm_log_{getuser()}", dir="/tmp"))
+            # User can read/write, group can read, others can't access:
+            user_log_path.chmod(mode=0o640)
+        else:
+            logging.error("Operating system cannot be determined")
+        
+        logging.info("Creating log files in path %s.", str(user_log_path))
+        return user_log_path
+    except Exception:
+        logging.error(f"Error occurred creating log files", exc_info=True)
+        return None
+    
+
 def get_user_config_path():
     logging_messages = []
     if os.name == "nt":
-        user_config_path = _get_Windows_home_path() / "AppData" / "Local" / "stitch_m" / "config.cfg"
+        user_config_path = _get_Windows_home_path() / "AppData" / "Local" / "stitchm" / "config.cfg"
     elif os.name == "posix":
-        user_config_path = Path.home() / ".config" / "stitch_m" / "config.cfg"
+        user_config_path = Path.home() / ".config" / "stitchm" / "config.cfg"
     else:
         logging_messages.append("Operating system cannot be determined")
         return None, logging_messages
@@ -96,6 +117,7 @@ def get_user_config_path():
 
 
 def get_config():
+    from configparser import ConfigParser
     config_messages = []
     config = ConfigParser()
     user_config_file, logging_messages = get_user_config_path()
@@ -127,6 +149,14 @@ def create_user_config():
             logging.error("Unable to create user config file due to directory issues", exc_info=True)
     else:
         logging.error("Unable to create user config file")
+
+
+def boolean_config_handler(config, section, key, default):
+    try:
+        return config.getboolean(section, key, fallback=default)
+    except ValueError:
+        logging.error("Invalid '%s' option found, default of '%s' will be used", key, default)
+        return default
 
 
 def _create_lnk_file(shortcut_path):
