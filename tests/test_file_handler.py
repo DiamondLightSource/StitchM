@@ -15,7 +15,8 @@ bad_testargs = [bad_file, test_marker_file, test_file]
 
 test_config = Path(__file__).resolve().with_name("config.cfg")
 
-class FileCheckerTests(unittest.TestCase):
+class FileHandlerTests(unittest.TestCase):
+
     @patch('stitch_m.file_handler')
     def test_argument_filtering(self, mocked_file_handler):
         mocked_file_handler.local_config_file.return_value = test_config

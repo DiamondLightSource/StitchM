@@ -34,31 +34,31 @@ def main():
 
     # if args has the attribute 'config', the setup subparser has been called and args.win will also exist
     if hasattr(args, 'config'):
-        from .logger import create_logger
-        create_logger("info", "info")
-        if args.windows_shortcut:
-            from .file_handler import create_Windows_shortcut
-            create_Windows_shortcut()
-        if args.config:
-            from .file_handler import create_user_config
-            create_user_config()
-        if not args.windows_shortcut and not args.config:
-           setup_parser.print_help()
+        from .log_handler import LogHandler
+        with LogHandler("info", "info"):
+            if args.windows_shortcut:
+                from .file_handler import create_Windows_shortcut
+                create_Windows_shortcut()
+            if args.config:
+                from .file_handler import create_user_config
+                create_user_config()
+            if not args.windows_shortcut and not args.config:
+                setup_parser.print_help()
         return
 
     # Empty strings are False
     if args.mosaic:
         from .file_handler import get_config
-        from .logger import setup_logging
+        from .log_handler import LogHandler
         from .run import main_run
         
         config, config_messages = get_config()
-        setup_logging(config, config_messages)
-        if args.markers:
-            logging.info("Sending files %s, %s to be stitched", args.mosaic, args.markers)
-            main_run(config, args.mosaic, args.markers)
-        else:
-            logging.info("Sending file %s to be stitched", args.mosaic)
-            main_run(config, args.mosaic)
+        with LogHandler(config=config, config_messages=config_messages):
+            if args.markers:
+                logging.info("Sending files %s, %s to be stitched", args.mosaic, args.markers)
+                main_run(config, args.mosaic, args.markers)
+            else:
+                logging.info("Sending file %s to be stitched", args.mosaic)
+                main_run(config, args.mosaic)
     else:
         parser.print_help()

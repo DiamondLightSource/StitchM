@@ -9,7 +9,7 @@ bioformats in FIJI/ImageJ.
 
 ## Installation
 Using pip: `python -m pip install StitchM`
-Coming soon on conda-forge (also as `StitchM`)
+Available on [PyPI](https://pypi.org/project/StitchM/) and [conda-forge](https://github.com/conda-forge/stitchm-feedstock)
 
 ## Using StitchM:
 To use command line script: `StitchM --help` and `StitchM setup --help` to get options and info

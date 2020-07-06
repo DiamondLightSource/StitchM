@@ -1,5 +1,5 @@
 {% set name = "StitchM" %}
-{% set version = "1.0.2" %}
+{% set version = "1.0.3" %}
 {% set import_name = "stitch_m" %}
 package:
   name: {{ name | lower }}
@@ -10,10 +10,10 @@ source:
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: {{ PYTHON }} -m pip install . -vv
   entry_points:
     - {{ name }} = {{ import_name }}.scripts.commandline:main
-  skip: True  # [py<35]
+  skip: true  # [py<36]
 
 requirements:
   host:
@@ -41,7 +41,7 @@ about:
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
-  summary: 'Stitches mosaic images from Cockpit (Micron)'
+  summary: Stitches mosaic images from Cockpit (Micron)
 
   description: |
     StitchM stitches together mosaic images taken in Cockpit (Micron)

@@ -1,4 +1,4 @@
-version_info = (1, 0, 2)
+version_info = (1, 0, 3)
 __version__ = '.'.join(str(c) for c in version_info)
 __author__ = "Thomas Fish"
 
@@ -14,11 +14,12 @@ def stitch_and_save(mosaic_file, marker_file=None):
 
     from .run import main_run
     from .file_handler import get_config
-    from .logger import setup_logging
+    from .log_handler import LogHandler
     
     config, config_messages = get_config()
-    setup_logging(config, config_messages)
-    main_run(config, mosaic_file, marker_file)
+    with LogHandler(config=config, config_messages=config_messages):
+        main_run(config, mosaic_file, marker_file)
+
 
 def stitch(mosaic_file, marker_file=None):
     """
@@ -35,11 +36,11 @@ def stitch(mosaic_file, marker_file=None):
 
     from .run import _stitch
     from .file_handler import get_config
-    from .logger import setup_logging
+    from .log_handler import LogHandler
     
     config, config_messages = get_config()
-    setup_logging(config, config_messages)
-    return _stitch(config, mosaic_file, marker_file)
+    with LogHandler(config=config, config_messages=config_messages):
+        return _stitch(config, mosaic_file, marker_file)
 
 def save(mosaic, metadata, tiff_file):
     """
@@ -54,8 +55,8 @@ def save(mosaic, metadata, tiff_file):
 
     from .run import _save
     from .file_handler import get_config
-    from .logger import setup_logging
+    from .log_handler import LogHandler
     
     config, config_messages = get_config()
-    setup_logging(config, config_messages)
-    _save(mosaic, metadata, tiff_file)
+    with LogHandler(config=config, config_messages=config_messages):
+        _save(mosaic, metadata, tiff_file)
