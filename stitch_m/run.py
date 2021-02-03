@@ -42,16 +42,17 @@ def _stitch(config, mosaic, markers):
     from .unstitched_image import UnstitchedImage
     from .metadata_maker import MetadataMaker
     from .stitcher import Stitcher
+    dtype = "uint16"
     try:
         if is_mosaic_file(mosaic):
             mosaic_path = Path(mosaic).resolve()  # Gets absolute path of mosaic file
             tiff_filename = str(mosaic_path.with_suffix(".ome.tiff"))
 
             unstitched = UnstitchedImage(mosaic_path)
-            stitcher = Stitcher(datatype="uint16")
+            stitcher = Stitcher(dtype)
             boolean_config_handler
             mosaic = stitcher.make_mosaic(unstitched, boolean_config_handler(config, 'PROCESSING', 'filter', default=True))
-            metadata_creator = MetadataMaker(tiff_filename, unstitched, stitcher.get_brightfield_list())
+            metadata_creator = MetadataMaker(tiff_filename, unstitched, stitcher.get_brightfield_list(), dtype)
 
             if markers is not None and is_marker_file(markers) and Path(markers).is_file():
                 tiff_filename = tiff_filename.replace(".ome.tiff", "_marked.ome.tiff")
