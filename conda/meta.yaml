@@ -1,5 +1,5 @@
 {% set name = "StitchM" %}
-{% set version = "1.0.3" %}
+{% set version = "1.1.0" %}
 {% set import_name = "stitch_m" %}
 package:
   name: {{ name | lower }}
