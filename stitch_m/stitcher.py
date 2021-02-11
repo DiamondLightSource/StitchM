@@ -9,7 +9,7 @@ class Stitcher():
 
     def __init__(self, datatype="uint16"):
         '''Default datatype="uint16"'''
-        self.dtype = datatype
+        self.dtype = np.dtype(datatype)
         self.brightfield_list = []
 
     def make_mosaic(self, unstitched, filter=True):

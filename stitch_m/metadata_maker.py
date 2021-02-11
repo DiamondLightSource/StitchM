@@ -10,7 +10,7 @@ from .edge_definer import marker_edge_definer
 
 class MetadataMaker():
 
-    def __init__(self, image_name, unstitched, brightfield_image_list):
+    def __init__(self, image_name, unstitched, brightfield_image_list, datatype):
         # Set up attributes and variables
         self.boundaries = unstitched.boundaries
         self.mosaic_centre = unstitched.mosaic_centre
@@ -31,7 +31,7 @@ class MetadataMaker():
         pixels = image.Pixels
         pixels.set_DimensionOrder("XYZCT")
         pixels.set_ID("0")
-        pixels.set_PixelType("uint16")
+        pixels.set_PixelType(str(datatype))
         pixels.set_SizeX(mosaic_dims[0])
         pixels.set_SizeY(mosaic_dims[1])
         pixels.set_SizeZ(1)

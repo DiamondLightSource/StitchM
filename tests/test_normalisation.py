@@ -9,7 +9,7 @@ class NormalisationTests(unittest.TestCase):
     @classmethod
     def setUp(cls):
         unittest.TestCase.setUp(cls)
-        cls.dtype = "uint16"
+        cls.dtype = np.uint16
         cls.image_max = np.iinfo(cls.dtype).max - 1
 
     def test_rescale_corrected_imgs(self):
