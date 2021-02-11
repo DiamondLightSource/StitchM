@@ -11,3 +11,4 @@
 htmlcov
 /build
 *.bat
+venv/
