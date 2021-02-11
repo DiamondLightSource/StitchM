@@ -2,8 +2,8 @@ from os import path
 import sys
 import setuptools
 
-from stitch_m import __version__, __author__
-from stitch_m.file_handler import dragndrop_bat_file
+from src.stitch_m import __version__, __author__
+from src.stitch_m.file_handler import dragndrop_bat_file
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -35,13 +35,14 @@ setuptools.setup(
     license_files=["LICENSE",],
     url="https://github.com/DiamondLightSource/StitchM",
     install_requires=requirements,
-    packages=setuptools.find_packages(exclude=("test", "scripts")),
+    packages=setuptools.find_packages(exclude=('scripts')),
+    package_dir={'src': ''},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
     ],
-    package_data={'stitch_m': ['config.cfg', 'scripts/dragndrop.bat']},
+    package_data={'stitch_m': ['config.cfg']},
     python_requires='>=3.6',
     entry_points={
         'console_scripts': [
