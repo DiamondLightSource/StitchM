@@ -44,8 +44,7 @@ class UnstitchedImage():
         # x pixel order is backwards for each image:
         with mrcfile.open(mrc_path, permissive=True) as mrc:
             self.images = np.asarray(mrc.data, dtype='i')[:, ::-1, :]
-
-        self.exposures = location_array[:, 2]
+        
         self.exposure_minmax = location_array[:, 7:9]
 
         self.img_size = location_array[0, 3:5]

@@ -17,7 +17,6 @@ class MetadataMaker():
         self.pix2edge = unstitched.pix2edge
         self.pixelsize = unstitched.pixel_size
         mosaic_dims = self.__get_mosaic_dims()
-        exposure = np.median(unstitched.exposures[brightfield_image_list])
         x_position, y_position = self.__get_x_y_position(self.boundaries, mosaic_dims, unstitched.pixel_size)
         physical_mosaic_dims = [dim * unstitched.pixel_size for dim in mosaic_dims]
         date_time = datetime.datetime.fromtimestamp(unstitched.modified_timestamp).isoformat()  # formatted as: "yyyy-mm-ddThh:mm:ss"
@@ -53,7 +52,6 @@ class MetadataMaker():
 
         # Add plane/tiffdata
         plane = pixels.plane(0)
-        plane.set_ExposureTime(exposure)
         plane.set_TheZ(0)
         plane.set_TheC(0)
         plane.set_TheT(0)
