@@ -22,7 +22,13 @@ class Stitcher():
             # create new large array and load data into it from mosaic:
             mosaic_size = (unstitched.boundaries[1, 0] - unstitched.boundaries[0, 0],
                          unstitched.boundaries[1, 1] - unstitched.boundaries[0, 1])
-            mosaic_array = np.full(mosaic_size, np.iinfo(self.dtype).max, dtype=self.dtype)
+            # If we are not normalising fill with zero values rahrer than max
+            if normaliseOff:
+                fillvalue=np.iinfo(self.dtype).max
+            else:
+                fillvalue=0
+
+            mosaic_array = np.full(mosaic_size, fillvalue, dtype=self.dtype)
             
             print ("calling normalise_image with normaliseOff=",normaliseOff)
             normalised_images = normalise_images(
