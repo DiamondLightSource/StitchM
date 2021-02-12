@@ -35,8 +35,8 @@ setuptools.setup(
     license_files=["LICENSE",],
     url="https://github.com/DiamondLightSource/StitchM",
     install_requires=requirements,
-    packages=setuptools.find_packages(exclude=('scripts')),
-    package_dir={'src': ''},
+    packages=setuptools.find_packages('src', exclude=('scripts', 'tests')),
+    package_dir={'': 'src'},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",

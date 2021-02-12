@@ -34,7 +34,7 @@ test:
   source_files:
     - tests
   commands:
-    - python -m unittest discover tests -p "test_*.py" -vv
+    - python -m unittest discover -s src -p "test_*.py" -vv
 
 about:
   home: https://github.com/DiamondLightSource/{{ name }}
