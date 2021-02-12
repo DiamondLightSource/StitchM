@@ -71,7 +71,7 @@ class TestEntryPointCommandline(unittest.TestCase):
         args = ["path_to/mosaic"]
         run_args = ["StitchM", "--mosaic", args[0]]
         with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
-            sleep(10)
+            sleep(15)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
         self.assertIn(f"Invalid arguments: {args[0]}, None, True", stdout, msg=f"Actual stdout: {stdout}")
@@ -80,7 +80,7 @@ class TestEntryPointCommandline(unittest.TestCase):
         args = ["path_to/mosaic.txt"]
         run_args = ["StitchM", "--mosaic", args[0]]
         with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
-            sleep(2)
+            sleep(10)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
         self.assertIn(f"Mosaic file path cannot be resolved", stdout, msg=f"Actual stdout: {stdout}")
@@ -89,7 +89,7 @@ class TestEntryPointCommandline(unittest.TestCase):
         args = ["path_to/mosaic", "path_to/markers"]
         run_args = ["StitchM", "--mosaic", args[0], "--markers", args[1], "--no-normalisation"]
         with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
-            sleep(2)
+            sleep(15)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
         self.assertIn(f"Invalid arguments: {args[0]}, {args[1]}, False", stdout, msg=f"Actual stdout: {stdout}")
