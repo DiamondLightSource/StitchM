@@ -62,10 +62,11 @@ def _stitch(config, mosaic, markers, normalise):
             logging.error("Mosaic file path cannot be resolved")
             raise IOError("Mosaic file path cannot be resolved")
     except:
-        logging.error("Invalid arguments: %s, %s, %s", mosaic, markers, normalise, exc_info=True)
+        arg_string = ", ".join((str(mosaic or None), str(markers or None), str(normalise)))
+        logging.error("Invalid arguments: %s", arg_string, exc_info=True)
         if boolean_config_handler(config, 'OTHER', 'wait upon failure', default=True):
             input("Processing failed! Press enter to exit")
-        raise IOError("Invalid arguments: {}, {}, {}".format(mosaic, markers, normalise))
+        raise IOError("Invalid arguments: %s", arg_string)
     
 
 def _save(mosaic, metadata, tiff_filename):
