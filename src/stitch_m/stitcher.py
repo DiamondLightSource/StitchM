@@ -23,18 +23,26 @@ class Stitcher():
             mosaic_size = (unstitched.boundaries[1, 0] - unstitched.boundaries[0, 0],
                          unstitched.boundaries[1, 1] - unstitched.boundaries[0, 1])
             
-            # If we are not normalising fill with zero values rather than max
+            # If we are not normalising, fill with zero values rather than max
             fill_value = np.iinfo(self.dtype).max * normalise
             mosaic_array = np.full(mosaic_size, fill_value, dtype=self.dtype)
             
             if normalise:
+                # Apply exposure correction
                 images = exposure_correct(unstitched.images, unstitched.exposure_minmax, self.brightfield_list)
             else:
+                # Filter out unwanted images
                 images = unstitched.images[self.brightfield_list]
             
-            normalised_images = cast_to_dtype(
-                normalise_to_datatype(np.asarray(images)),
-                self.dtype)
+            # Convert to numpy array
+            images = np.asarray(unstitched.images[self.brightfield_list])
+
+            if normalise:
+                # Rescale max/min to fit data type
+                images = normalise_to_datatype(images, self.dtype, trim=True)
+            
+            # Cast to output data type
+            preprocessed_images = cast_to_dtype(images, self.dtype)
 
             for i in range(len(self.brightfield_list)):
                 start, end = image_edge_definer(
@@ -44,7 +52,7 @@ class Stitcher():
                     )
                 # Array needs to be transposed for python versus dv.
                 # This rotates each image so they line up correctly
-                mosaic_array[start[0]:end[0], start[1]:end[1]] = normalised_images[i, :, :].T
+                mosaic_array[start[0]:end[0], start[1]:end[1]] = preprocessed_images[i, :, :].T
             # Rotate back and flip
             return np.flip(mosaic_array.T, 0)
         else:
