@@ -2,11 +2,15 @@ import numpy as np
 import logging
 
 
-def normalise_images(images, exposure_minmax, brightfield_image_list, datatype):
-    normalised_imgs = _rescale_corrected_imgs(
-        _exposure_correction(images, exposure_minmax, brightfield_image_list),
-        datatype
-        )
+def normalise_images(images, exposure_minmax, brightfield_image_list, datatype, normalise):
+    if normalise:
+        normalised_imgs = _rescale_corrected_imgs(
+            _exposure_correction(images, exposure_minmax, brightfield_image_list),
+            datatype, normalise
+    )
+    else:
+        normalised_imgs = _rescale_corrected_imgs(
+            images, datatype, normalise)   
     return normalised_imgs
 
 
@@ -42,22 +46,25 @@ def _exposure_correction(images, exposure_minmax, brightfield_image_list):
     return np.asarray(corrected_images)
 
 
-def _rescale_corrected_imgs(corrected_images, datatype):
+def _rescale_corrected_imgs(corrected_images, datatype,normalise):
     logging.info("Re-scaling images to %s", datatype)
     # Trim images before correction to avoid any speckles
     # leading to the entire image to be quite dark:
-    corrected_images = np.asarray(
-        _image_value_trimmer(corrected_images)
+    if normalise:
+        corrected_images = np.asarray(
+            _image_value_trimmer(corrected_images)
         ).astype('f')  # Convert to float for rescaling
-    # Move minimum value of all corrected images to 0:
-    corrected_min = corrected_images.min()
-    corrected_images -= corrected_min
-    # Convert values to float and rescale so the maximum
-    # is set by datatype:
-    corrected_max = corrected_images.max()
-    # New max should be 1 less than the max allowed by datatype
-    # so that the background (max) can be made transparent without losing data
-    new_max = (np.iinfo(datatype).max - 1)
-    rescaled_images = corrected_images * (new_max / corrected_max)
-
-    return rescaled_images.astype(datatype)
+        # Move minimum value of all corrected images to 0:
+        corrected_min = corrected_images.min()
+        corrected_images -= corrected_min
+        # Convert values to float and rescale so the maximum
+        # is set by datatype:
+        corrected_max = corrected_images.max()
+        # New max should be 1 less than the max allowed by datatype
+        # so that the background (max) can be made transparent without losing data
+        new_max = (np.iinfo(datatype).max - 1)
+        rescaled_images = corrected_images * (new_max / corrected_max)
+        
+        return rescaled_images.astype(datatype)
+    else:
+        return (corrected_images)

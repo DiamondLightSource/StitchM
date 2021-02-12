@@ -12,7 +12,7 @@ class Stitcher():
         self.dtype = np.dtype(datatype)
         self.brightfield_list = []
 
-    def make_mosaic(self, unstitched, filter=True):
+    def make_mosaic(self, unstitched, filter=True, normalise=True):
         logging.info("Creating mosaic")
         if unstitched.img_count == unstitched.images.shape[0]:
             if filter:
@@ -23,9 +23,10 @@ class Stitcher():
             mosaic_size = (unstitched.boundaries[1, 0] - unstitched.boundaries[0, 0],
                          unstitched.boundaries[1, 1] - unstitched.boundaries[0, 1])
             mosaic_array = np.full(mosaic_size, np.iinfo(self.dtype).max, dtype=self.dtype)
-
+            
+            print ("calling normalise_image with normalise=",normalise)
             normalised_images = normalise_images(
-                unstitched.images, unstitched.exposure_minmax, self.brightfield_list, self.dtype)
+                unstitched.images, unstitched.exposure_minmax, self.brightfield_list, self.dtype,normalise)
 
             for i in range(len(self.brightfield_list)):
                 start, end = image_edge_definer(

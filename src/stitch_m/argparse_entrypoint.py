@@ -19,6 +19,12 @@ def main():
     stitch_group.add_argument("-m", "--mosaic", metavar="PATH/TO/MOSAIC_FILE.TXT", dest="mosaic", type=str, default="", action='store', help="the mosaic to be stitched (.txt file)")
     stitch_group.add_argument("-a", "--markers", metavar="PATH/TO/MARKER_FILE.TXT", dest="markers", type=str, default="", action='store', help="[OPTIONAL] the markers to be added as ROIs (.txt file)")
 
+    stitch_group.add_argument("-n", "--no-normalisation",
+                              metavar="Do not normalise images",
+                              dest="normalise", type=bool,
+                              default=False, action='store',
+                              help="[OPTIONAL]switch to not normalise the output images.")
+
     setup_subparsers = parser.add_subparsers(title="Setup options", description="enter `StitchM setup -h` for details")
     setup_parser = setup_subparsers.add_parser(name="setup", add_help=False)
     setup_parser.add_argument("-w", "--windows-shortcut", dest="windows_shortcut", action='store_true', help="creates a Windows shortcut on the user's desktop that accepts drag and dropped files (one mosaic at a time, optionally including markers)")
@@ -51,14 +57,16 @@ def main():
         from .file_handler import get_config
         from .log_handler import LogHandler
         from .run import main_run
+
+        print("normalise args ",args.normalise)
         
         config, config_messages = get_config()
         with LogHandler(config=config, config_messages=config_messages):
             if args.markers:
-                logging.info("Sending files %s, %s to be stitched", args.mosaic, args.markers)
-                main_run(config, args.mosaic, args.markers)
+                logging.info("Sending files %s, %s to be stitched", args.mosaic, args.markers, args.normalise)
+                main_run(config, args.mosaic, markers=args.markers, normalise=args.normalise)
             else:
-                logging.info("Sending file %s to be stitched", args.mosaic)
-                main_run(config, args.mosaic)
+                logging.info("Sending file %s to be stitched", args.mosaic, args.normalise)
+                main_run(config, args.mosaic, normalise=args.normalise)
     else:
         parser.print_help()
