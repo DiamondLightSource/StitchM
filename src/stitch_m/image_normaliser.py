@@ -52,7 +52,7 @@ def normalise_to_datatype(corrected_images, datatype, trim=True):
     new_max = (np.iinfo(datatype).max - 1)
     rescaled_images = corrected_images * (new_max / corrected_max)
     
-    return rescaled_images.astype(datatype)
+    return cast_to_dtype(rescaled_images, datatype)
 
 def cast_to_dtype(image, data_type):
     try:
