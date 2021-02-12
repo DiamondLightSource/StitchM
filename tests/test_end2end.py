@@ -67,4 +67,3 @@ class EndToEndTests(unittest.TestCase):
                 self.assertTrue((output_image == expected_image).all(), msg=f"Not true for {test_file}")
         else:
             print("Cannot run test without access to dls directories")
-

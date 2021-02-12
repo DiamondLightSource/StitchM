@@ -57,26 +57,29 @@ class TestEntryPointCommandline(unittest.TestCase):
 
     def test_commandline_function_with_args(self, ):
         with patch('stitch_m.run.main_run', MagicMock()) as main_run:
-            mosaic_arg = "mosaic_path"
-            marker_arg = "marker_path"
-            sys.argv =["StitchM", "--mosaic", mosaic_arg, "--markers", marker_arg]
+            kwargs = {}
+            kwargs['mosaic'] = "mosaic_path"
+            kwargs['markers'] = "marker_path"
+            kwargs['normalise'] = True
+
+            sys.argv =["StitchM", "--mosaic", kwargs['mosaic'], "--markers", kwargs['markers']]
             commandline.main()
 
-            main_run.assert_called_once_with(ANY, mosaic_arg, marker_arg)
+            main_run.assert_called_once_with(ANY, **kwargs)
 
     def test_commandline_method(self):
         args = ["path_to/mosaic"]
         run_args = ["StitchM", "--mosaic", args[0]]
-        with Popen(run_args, universal_newlines=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
-            sleep(2)
+        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+            sleep(10)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
-        self.assertIn(f"Invalid arguments: {args[0]}, None", stdout, msg=f"Actual stdout: {stdout}")
+        self.assertIn(f"Invalid arguments: {args[0]}, None, True", stdout, msg=f"Actual stdout: {stdout}")
 
     def test_commandline_method_invalid_path(self):
         args = ["path_to/mosaic.txt"]
         run_args = ["StitchM", "--mosaic", args[0]]
-        with Popen(run_args, universal_newlines=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
             sleep(2)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
@@ -84,16 +87,16 @@ class TestEntryPointCommandline(unittest.TestCase):
 
     def test_commandline_method_with_marker_file(self):
         args = ["path_to/mosaic", "path_to/markers"]
-        run_args = ["StitchM", "--mosaic", args[0], "--markers", args[1]]
-        with Popen(run_args, universal_newlines=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+        run_args = ["StitchM", "--mosaic", args[0], "--markers", args[1], "--no-normalisation"]
+        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
             sleep(2)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
-        self.assertIn(f"Invalid arguments: {args[0]}, {args[1]}", stdout, msg=f"Actual stdout: {stdout}")
+        self.assertIn(f"Invalid arguments: {args[0]}, {args[1]}, False", stdout, msg=f"Actual stdout: {stdout}")
 
     def test_commandline_method_version_number(self):
         run_args = ["StitchM", "--version"]
-        with Popen(run_args, universal_newlines=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
             sleep(2)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
@@ -101,7 +104,7 @@ class TestEntryPointCommandline(unittest.TestCase):
 
     def test_commandline_method_setup_subparser(self):
         run_args = ["StitchM", "setup"]
-        with Popen(run_args, universal_newlines=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
             sleep(2)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
