@@ -58,8 +58,6 @@ def main():
         from .log_handler import LogHandler
         from .run import main_run
 
-        print("normaliseOff args ",args.normaliseOff)
-        
         config, config_messages = get_config()
         with LogHandler(config=config, config_messages=config_messages):
             if args.markers:

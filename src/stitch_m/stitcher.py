@@ -30,7 +30,6 @@ class Stitcher():
 
             mosaic_array = np.full(mosaic_size, fillvalue, dtype=self.dtype)
             
-            print ("calling normalise_image with normaliseOff=",normaliseOff)
             normalised_images = normalise_images(
                 unstitched.images, unstitched.exposure_minmax, self.brightfield_list, self.dtype,normaliseOff)
 
