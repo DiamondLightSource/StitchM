@@ -36,7 +36,7 @@ def sort_args_then_run():
         if wait_on_fail:
             input("Processing failed! Press enter to exit")
 
-def _stitch(config, mosaic, markers, normalise):
+def _stitch(config, mosaic, markers, normaliseOff):
     from pathlib import Path
     from .file_handler import is_mosaic_file, is_marker_file, boolean_config_handler
     from .unstitched_image import UnstitchedImage
@@ -51,7 +51,7 @@ def _stitch(config, mosaic, markers, normalise):
             unstitched = UnstitchedImage(mosaic_path)
             stitcher = Stitcher(dtype)
             boolean_config_handler
-            mosaic = stitcher.make_mosaic(unstitched, boolean_config_handler(config, 'PROCESSING', 'filter', default=True), normalise)
+            mosaic = stitcher.make_mosaic(unstitched, boolean_config_handler(config, 'PROCESSING', 'filter', default=True), normaliseOff)
             metadata_creator = MetadataMaker(tiff_filename, unstitched, stitcher.get_brightfield_list())
 
             if markers is not None and is_marker_file(markers) and Path(markers).is_file():
@@ -78,19 +78,19 @@ def _save(mosaic, metadata, tiff_filename):
         logging.error("Cannot save: %s", tiff_filename, exc_info=True)
         raise IOError("Cannot save: {}".format(tiff_filename))
 
-def main_run(config, mosaic, markers=None, normalise=False):
+def main_run(config, mosaic, markers=None, normaliseOff=False):
     """
     PARAMETERS:
         mosaic - Path of .txt file that contains the mosaic information, including the path to the .mrc file
         markers - Path of .txt file that contains a list of marker placements and associated numbers (please make sure this correctly corresponds to the mosaic file)
-        normalise - boolean that specifies if we should normalise the image or not. 
+        normaliseOff - boolean that specifies if we should not normalise the image. 
     
     The output will be saved as the mosaic filename, with the suffix '.ome.tiff' (or '_marked.ome.tiff' if markers are supplied), in same directory as the mosaic file.
     """
-    logging.info("Running StitchM with arguments: mosaic=%s, markers=%s, normalise=%s", mosaic, markers, normalise)
+    logging.info("Running StitchM with arguments: mosaic=%s, markers=%s, normaliseOff=%s", mosaic, markers, normaliseOff)
     from .file_handler import boolean_config_handler
     try:
-        mosaic, metadata, tiff_file = _stitch(config, mosaic, markers, normalise)
+        mosaic, metadata, tiff_file = _stitch(config, mosaic, markers, normaliseOff)
         _save(mosaic, metadata, tiff_file)
         if boolean_config_handler(config, 'OTHER', 'wait upon completion', default='false'):
             input("Processing complete. Press enter to exit")

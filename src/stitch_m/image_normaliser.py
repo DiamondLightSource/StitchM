@@ -2,15 +2,15 @@ import numpy as np
 import logging
 
 
-def normalise_images(images, exposure_minmax, brightfield_image_list, datatype, normalise):
-    if normalise:
+def normalise_images(images, exposure_minmax, brightfield_image_list, datatype, normaliseOff):
+    if not normaliseOff:
         normalised_imgs = _rescale_corrected_imgs(
             _exposure_correction(images, exposure_minmax, brightfield_image_list),
-            datatype, normalise
+            datatype, normaliseOff
     )
     else:
         normalised_imgs = _rescale_corrected_imgs(
-            images, datatype, normalise)   
+            images, datatype, normaliseOff)   
     return normalised_imgs
 
 
@@ -46,11 +46,11 @@ def _exposure_correction(images, exposure_minmax, brightfield_image_list):
     return np.asarray(corrected_images)
 
 
-def _rescale_corrected_imgs(corrected_images, datatype,normalise):
+def _rescale_corrected_imgs(corrected_images, datatype,normaliseOff):
     logging.info("Re-scaling images to %s", datatype)
     # Trim images before correction to avoid any speckles
     # leading to the entire image to be quite dark:
-    if normalise:
+    if not normaliseOff:
         corrected_images = np.asarray(
             _image_value_trimmer(corrected_images)
         ).astype('f')  # Convert to float for rescaling

@@ -21,7 +21,7 @@ def main():
 
     stitch_group.add_argument("-n", "--no-normalisation",
                               metavar="Do not normalise images",
-                              dest="normalise", type=bool,
+                              dest="normaliseOff", type=bool,
                               default=False, action='store',
                               help="[OPTIONAL]switch to not normalise the output images.")
 
@@ -58,15 +58,15 @@ def main():
         from .log_handler import LogHandler
         from .run import main_run
 
-        print("normalise args ",args.normalise)
+        print("normaliseOff args ",args.normaliseOff)
         
         config, config_messages = get_config()
         with LogHandler(config=config, config_messages=config_messages):
             if args.markers:
-                logging.info("Sending files %s, %s to be stitched", args.mosaic, args.markers, args.normalise)
-                main_run(config, args.mosaic, markers=args.markers, normalise=args.normalise)
+                logging.info("Sending files %s, %s to be stitched", args.mosaic, args.markers, args.normaliseOff)
+                main_run(config, args.mosaic, markers=args.markers, normaliseOff=args.normaliseOff)
             else:
-                logging.info("Sending file %s to be stitched", args.mosaic, args.normalise)
-                main_run(config, args.mosaic, normalise=args.normalise)
+                logging.info("Sending file %s to be stitched", args.mosaic, args.normaliseOff)
+                main_run(config, args.mosaic, normaliseOff=args.normaliseOff)
     else:
         parser.print_help()
