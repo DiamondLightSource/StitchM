@@ -16,7 +16,7 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "tests",
+        "src",
         "-p",
         "test_*.py",
         "-b",
