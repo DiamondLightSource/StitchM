@@ -1,5 +1,6 @@
 import unittest
 import numpy as np
+from numpy.testing import assert_array_equal
 
 from stitch_m import image_normaliser
 
@@ -25,14 +26,14 @@ class NormalisationTests(unittest.TestCase):
         exp_minmax = np.asarray([[0, 1], [0, 1]])
         good_image_list = [0, 1]
 
-        expected_image = np.linspace(0, self.image_max, 12).reshape(3, 4).astype('i')
+        expected_image = image_normaliser.cast_to_dtype(np.linspace(0, self.image_max, 12).reshape(3, 4), self.dtype)
         expected_images = np.array([expected_image, expected_image])
         
         images_out = image_normaliser.normalise_to_datatype(
             np.asarray(
                 image_normaliser.exposure_correct(images, exp_minmax, good_image_list)),
                 self.dtype)
-        self.assertTrue((images_out == expected_images).all(), msg="Image doesn't match expected")
+        assert_array_equal(image_normaliser.cast_to_dtype(images_out, self.dtype), expected_images)
 
     def test_normalise_avoiding_bad_image(self):
         image = np.linspace(524, 5536, 12).reshape(3, 4)
@@ -43,11 +44,11 @@ class NormalisationTests(unittest.TestCase):
         exp_minmax = np.asarray([[0, 1], [0, 1], [0, 1]])
         good_image_list = [0, 2]
 
-        expected_image = np.linspace(0, self.image_max, 12).reshape(3, 4).astype('i')
+        expected_image = image_normaliser.cast_to_dtype( np.linspace(0, self.image_max, 12).reshape(3, 4), self.dtype)
         expected_images = np.array([expected_image, expected_image])
 
         images_out = image_normaliser.normalise_to_datatype(
             np.asarray(
                 image_normaliser.exposure_correct(images, exp_minmax, good_image_list)),
                 self.dtype)
-        self.assertTrue((images_out == expected_images).all(), msg="Image doesn't match expected")
+        assert_array_equal(image_normaliser.cast_to_dtype(images_out, self.dtype), expected_images)
