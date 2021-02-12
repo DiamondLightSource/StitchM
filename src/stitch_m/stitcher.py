@@ -2,7 +2,7 @@ import numpy as np
 import logging
 
 from .edge_definer import image_edge_definer
-from .image_normaliser import normalise_images
+from .image_normaliser import exposure_correct, normalise_to_datatype, cast_to_dtype
 
 
 class Stitcher():
@@ -12,7 +12,7 @@ class Stitcher():
         self.dtype = np.dtype(datatype)
         self.brightfield_list = []
 
-    def make_mosaic(self, unstitched, filter=True, normaliseOff=False):
+    def make_mosaic(self, unstitched, filter=True, normalise=True):
         logging.info("Creating mosaic")
         if unstitched.img_count == unstitched.images.shape[0]:
             if filter:
@@ -22,16 +22,19 @@ class Stitcher():
             # create new large array and load data into it from mosaic:
             mosaic_size = (unstitched.boundaries[1, 0] - unstitched.boundaries[0, 0],
                          unstitched.boundaries[1, 1] - unstitched.boundaries[0, 1])
-            # If we are not normalising fill with zero values rahrer than max
-            if normaliseOff:
-                fillvalue=np.iinfo(self.dtype).max
-            else:
-                fillvalue=0
-
-            mosaic_array = np.full(mosaic_size, fillvalue, dtype=self.dtype)
             
-            normalised_images = normalise_images(
-                unstitched.images, unstitched.exposure_minmax, self.brightfield_list, self.dtype,normaliseOff)
+            # If we are not normalising fill with zero values rather than max
+            fill_value = np.iinfo(self.dtype).max * normalise
+            mosaic_array = np.full(mosaic_size, fill_value, dtype=self.dtype)
+            
+            if normalise:
+                images = exposure_correct(unstitched.images, unstitched.exposure_minmax, self.brightfield_list)
+            else:
+                images = unstitched.images[self.brightfield_list]
+            
+            normalised_images = cast_to_dtype(
+                normalise_to_datatype(np.asarray(images)),
+                self.dtype)
 
             for i in range(len(self.brightfield_list)):
                 start, end = image_edge_definer(
