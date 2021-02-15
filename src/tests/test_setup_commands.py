@@ -16,11 +16,9 @@ class TestSetupFunctions(unittest.TestCase):
         # Set maximum difference string length to None (infinite)
         cls.maxDiff = None
 
-
     # ------------------
     # Test config setup:
-
-    
+   
     def test_setup_config(self):
         with patch('shutil.copyfile', MagicMock()) as mocked_copyfile:
             local_config_file = Path(stitch_m.__file__).resolve().with_name("config.cfg")
@@ -65,5 +63,3 @@ class TestSetupFunctions(unittest.TestCase):
             if link_created:
                 os.remove(test_shortcut_path)
             self.assertTrue(link_created)
-
-
