@@ -32,7 +32,7 @@ test:
     - {{ import_name }}
     - win32com.client  # [win]
   source_files:
-    - tests
+    - src/tests
   commands:
     - python -m unittest discover -s src -p "test_*.py" -vv
 
