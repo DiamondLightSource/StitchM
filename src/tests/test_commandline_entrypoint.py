@@ -70,7 +70,7 @@ class TestEntryPointCommandline(unittest.TestCase):
     def test_commandline_method(self):
         args = ["path_to/mosaic"]
         run_args = ["StitchM", "--mosaic", args[0]]
-        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+        with Popen(run_args, universal_newlines=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
             sleep(2)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
@@ -79,7 +79,7 @@ class TestEntryPointCommandline(unittest.TestCase):
     def test_commandline_method_invalid_path(self):
         args = ["path_to/mosaic.txt"]
         run_args = ["StitchM", "--mosaic", args[0]]
-        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+        with Popen(run_args, universal_newlines=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
             sleep(2)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
@@ -88,7 +88,7 @@ class TestEntryPointCommandline(unittest.TestCase):
     def test_commandline_method_with_marker_file(self):
         args = ["path_to/mosaic", "path_to/markers"]
         run_args = ["StitchM", "--mosaic", args[0], "--markers", args[1], "--no-normalisation"]
-        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+        with Popen(run_args, universal_newlines=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
             sleep(2)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
@@ -96,7 +96,7 @@ class TestEntryPointCommandline(unittest.TestCase):
 
     def test_commandline_method_version_number(self):
         run_args = ["StitchM", "--version"]
-        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+        with Popen(run_args, universal_newlines=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
             sleep(2)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
@@ -104,7 +104,7 @@ class TestEntryPointCommandline(unittest.TestCase):
 
     def test_commandline_method_setup_subparser(self):
         run_args = ["StitchM", "setup"]
-        with Popen(run_args, text=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
+        with Popen(run_args, universal_newlines=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT) as p:
             sleep(2)
             stdout, _ = p.communicate("pressed key", timeout=5)
         stdout = stdout.strip("\r\n").strip("\n")
