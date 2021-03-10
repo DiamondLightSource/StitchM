@@ -43,7 +43,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     package_data={'stitch_m': ['config.cfg']},
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     entry_points={
         'console_scripts': [
             "StitchM = stitch_m.scripts.commandline:main"
