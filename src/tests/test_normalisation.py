@@ -26,14 +26,15 @@ class NormalisationTests(unittest.TestCase):
         exp_minmax = np.asarray([[0, 1], [0, 1]])
         good_image_list = [0, 1]
 
-        expected_image = np.linspace(0, self.image_max, 12).reshape(3, 4).astype(self.dtype)
+        expected_image = np.around(np.linspace(0, self.image_max, 12).reshape(3, 4), 0).astype(self.dtype)
         expected_images = np.array([expected_image, expected_image])
         
         images_out = image_normaliser.normalise_to_datatype(
             np.asarray(
                 image_normaliser.exposure_correct(images, exp_minmax, good_image_list)),
                 self.dtype)
-        assert_array_equal(images_out.astype(self.dtype), expected_images)
+        images_out = np.around(images_out, 0).astype(self.dtype)
+        assert_array_equal(images_out, expected_images)
 
     def test_normalise_avoiding_bad_image(self):
         image = np.linspace(524, 5536, 12).reshape(3, 4)
@@ -44,11 +45,12 @@ class NormalisationTests(unittest.TestCase):
         exp_minmax = np.asarray([[0, 1], [0, 1], [0, 1]])
         good_image_list = [0, 2]
 
-        expected_image = np.linspace(0, self.image_max, 12).reshape(3, 4).astype(self.dtype)
+        expected_image = np.around(np.linspace(0, self.image_max, 12).reshape(3, 4), 0).astype(self.dtype)
         expected_images = np.array([expected_image, expected_image])
 
         images_out = image_normaliser.normalise_to_datatype(
             np.asarray(
                 image_normaliser.exposure_correct(images, exp_minmax, good_image_list)),
                 self.dtype)
-        assert_array_equal(images_out.astype(self.dtype), expected_images)
+        images_out = np.around(images_out, 0).astype(self.dtype)
+        assert_array_equal(images_out, expected_images)

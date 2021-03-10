@@ -2,6 +2,9 @@ import os
 import sys
 import logging
 
+from .__init__ import __version__
+
+
 def sort_args_then_run():
     from .log_handler import LogHandler
     from .file_handler import argument_organiser, get_config, create_user_config, create_Windows_shortcut, boolean_config_handler
@@ -50,14 +53,13 @@ def _stitch(config, mosaic, markers, normalise):
 
             unstitched = UnstitchedImage(mosaic_path)
             stitcher = Stitcher(dtype)
-            boolean_config_handler
-            mosaic = stitcher.make_mosaic(unstitched, boolean_config_handler(config, 'PROCESSING', 'filter', default=True), normalise)
-            metadata_creator = MetadataMaker(tiff_filename, unstitched, stitcher.get_brightfield_list())
+            mosaic_array = stitcher.make_mosaic(unstitched, boolean_config_handler(config, 'PROCESSING', 'filter', default=True), normalise)
+            metadata_creator = MetadataMaker(tiff_filename, unstitched, stitcher.get_brightfield_list(), dtype)
 
             if markers is not None and is_marker_file(markers) and Path(markers).is_file():
                 tiff_filename = tiff_filename.replace(".ome.tiff", "_marked.ome.tiff")
                 metadata_creator.add_markers(tiff_filename, markers)
-            return mosaic, metadata_creator.get(), tiff_filename
+            return mosaic_array, metadata_creator.get(), tiff_filename
         else:
             logging.error("Mosaic file path cannot be resolved")
             raise IOError("Mosaic file path cannot be resolved")
@@ -71,10 +73,17 @@ def _stitch(config, mosaic, markers, normalise):
 
 def _save(mosaic, metadata, tiff_filename):
     import tifffile as tf
+    from numpy import iinfo, uint32
     try:
         logging.info("Saving %s", tiff_filename)
-        with tf.TiffWriter(tiff_filename) as tif:
-            tif.save(mosaic, description=metadata.to_xml().encode(), metadata={'axes':'XYZCT'})
+        bigtiff = mosaic.size * mosaic.itemsize >= iinfo(uint32).max  # Check if data bigger than 4GB TIFF limit
+        with tf.TiffWriter(tiff_filename, bigtiff=bigtiff, ome=False) as tif:
+            tif.write(
+                mosaic,
+                description=metadata.to_xml().encode(),
+                photometric='MINISBLACK',
+                metadata={'axes':'YX'},
+                software=f"StitchM {__version__}")
     except:
         logging.error("Cannot save: %s", tiff_filename, exc_info=True)
         raise IOError("Cannot save: {}".format(tiff_filename))

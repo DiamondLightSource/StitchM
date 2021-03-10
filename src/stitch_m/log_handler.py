@@ -39,13 +39,18 @@ class LogHandler():
             self.logger.removeHandler(handler)
 
     def _create_or_setup(self, file_level="debug", stream_level="info", log_to_file=False, backup_count=10, config=None, config_messages=None):
-        if config and config_messages:
-            logger = self.setup_logging(config, config_messages)
+        if config:
+            logger = self.setup_logging(config)
         else:
             logger = self.create_logger(file_level, stream_level, log_to_file, backup_count)
+        
+        if config_messages:
+            for msg in config_messages:
+                logging.warning(msg)
+            
         return logger
 
-    def setup_logging(self, config, config_messages):
+    def setup_logging(self, config):
         from configparser import Error as ConfigError
         from .file_handler import boolean_config_handler
         try:
@@ -90,7 +95,7 @@ class LogHandler():
         stream_format = logging.Formatter("%(levelname)-8s %(message)s")
         stream_handler.setFormatter(stream_format)
 
-        logger = logging.getLogger(__name__)
+        logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)
         stream_handler.setLevel(stream_level)
         logger.addHandler(stream_handler)

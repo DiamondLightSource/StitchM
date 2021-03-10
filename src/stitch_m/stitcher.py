@@ -1,5 +1,6 @@
 import numpy as np
 import logging
+from numpy.testing import assert_array_equal
 
 from .edge_definer import image_edge_definer
 from .image_normaliser import exposure_correct, normalise_to_datatype, cast_to_dtype
@@ -12,10 +13,10 @@ class Stitcher():
         self.dtype = np.dtype(datatype)
         self.brightfield_list = []
 
-    def make_mosaic(self, unstitched, filter=True, normalise=True):
+    def make_mosaic(self, unstitched, fl_filter=True, normalise=True):
         logging.info("Creating mosaic")
         if unstitched.img_count == unstitched.images.shape[0]:
-            if filter:
+            if fl_filter:
                 self.brightfield_list = self._find_brightfield_images(unstitched.img_count, unstitched.exposure_minmax)
             else:
                 self.brightfield_list = [i for i in range(unstitched.img_count)]
@@ -64,18 +65,40 @@ class Stitcher():
 
     @staticmethod
     def _find_brightfield_images(img_count, minmax):
-        # This returns a list of "good" images i.e. not fluorescent images
-        # This is based on the min/max values of fluorescent images being
-        # significantly lower than the std deviation of all the images.
-        # This will fail if there are too many fl images to bf images.
+        """
+        This returns a list of indices of "good" images (i.e. not fluorescent 
+        images).
+        This is based on the min/max values of fluorescent images being 
+        lower than the median - 0.5 * std deviation of the min/max of all the  
+        images.
+
+        This method is not valid if there are too many fl images to bf images,
+        as this will affect the median value, leading to few, if any, images 
+        being filtered.
+
+        If more than half of the images are filtered out by this metric,
+        it is assumed something hasn't worked correctly and a list including
+        of all image indices will be returned.
+        """
+        full_list = range(0, img_count)
+
+        median_min = np.median(minmax[:, 0])
+        std_min = np.std(minmax[:, 0])
+
         median_max = np.median(minmax[:, 1])
         std_max = np.std(minmax[:, 1])
-        image_list = []
-        for i in range(img_count):
-            if minmax[i, 1] > median_max - std_max:
-                image_list.append(i)
-            else:
-                logging.info("Median of image %i (counted from 0) is not within the minimum threshold", i)
-        if len(image_list) > img_count / 2:
-            return image_list
-        return range(0, img_count)
+
+        good_list = np.nonzero(np.logical_and(
+            minmax[:, 1] > median_max - 0.5 * std_max,
+            minmax[:, 0] > median_min - 0.5 * std_min))[0].tolist()
+
+        if len(good_list) == img_count:
+            logging.info("No potential fluorescence images found.")
+        else:
+            logging.info(
+                "Potential fluorescence images found: '%s' (counted from 0)",
+                ", ".join([str(i) for i in np.setdiff1d(full_list, good_list)])
+                 )
+        if len(good_list) > img_count / 2:
+            return good_list
+        return full_list
