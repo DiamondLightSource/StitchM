@@ -40,7 +40,7 @@ def normalise_to_datatype(corrected_images, datatype, trim=True):
     # leading to the entire image to be quite dark:
     if trim: corrected_images = _image_value_trimmer(corrected_images)
 
-    corrected_images = np.asarray(corrected_images).astype('f')  # Convert to float for rescaling
+    corrected_images = np.asarray(corrected_images).astype(np.float64)  # Convert to float for rescaling
     # Move minimum value of all corrected images to 0:
     corrected_min = corrected_images.min()
     corrected_images -= corrected_min
