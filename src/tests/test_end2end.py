@@ -51,11 +51,11 @@ class EndToEndTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        for file in test_files:
-            output_path = file.replace('.txt', '.ome.tiff')
+        for f in test_files:
+            output_path = f.replace('.txt', '.ome.tiff')
             if os.path.isfile(output_path):
                 os.remove(output_path)
-            output_path = file.replace('.txt', '_marked.ome.tiff')
+            output_path = f.replace('.txt', '_marked.ome.tiff')
             if os.path.isfile(output_path):
                 os.remove(output_path)
 
