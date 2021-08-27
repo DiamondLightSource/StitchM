@@ -11,6 +11,7 @@ from .edge_definer import marker_edge_definer
 class MetadataMaker():
 
     def __init__(self, image_name, unstitched, brightfield_image_list, datatype):
+        logging.debug("Creating metadata")
         # Set up attributes and variables
         self.boundaries = unstitched.boundaries
         self.mosaic_centre = unstitched.mosaic_centre
@@ -25,12 +26,12 @@ class MetadataMaker():
         self.ox = oxdls.OMEXML()
         image = self.ox.image()
         image.set_Name(image_name)
-        image.set_ID("0")
+        image.set_ID("Image:0")
         image.set_AcquisitionDate(date_time)
 
         pixels = image.Pixels
         pixels.set_DimensionOrder("XYZCT")
-        pixels.set_ID("0")
+        pixels.set_ID("Pixels:0")
         pixels.set_PixelType(str(datatype))
         pixels.set_SizeX(mosaic_dims[0])
         pixels.set_SizeY(mosaic_dims[1])
@@ -43,12 +44,18 @@ class MetadataMaker():
         pixels.set_PhysicalSizeYUnit("nm")
         pixels.set_PhysicalSizeZ(1)  # Z doesn't have corresponding data
         pixels.set_PhysicalSizeZUnit("reference frame")
-        pixels.set_plane_count(1)
         pixels.set_tiffdata_count(1)
+        pixels.set_plane_count(1)
 
         channel = pixels.channel(0)
         channel.set_ID("Channel:0:0")
         channel.set_Name("C:0")
+
+        tiffdata = pixels.tiffdata(0)
+        tiffdata.set_FirstC(0)
+        tiffdata.set_FirstZ(0)
+        tiffdata.set_FirstT(0)
+        tiffdata.set_IFD(0)
 
         # Add plane/tiffdata
         plane = pixels.plane(0)
@@ -62,12 +69,6 @@ class MetadataMaker():
         plane.set_PositionY(y_position * 1.e3)
         plane.set_PositionZ(0)
 
-        tiffdata = pixels.tiffdata(0)
-        tiffdata.set_FirstC(0)
-        tiffdata.set_FirstZ(0)
-        tiffdata.set_FirstT(0)
-        tiffdata.set_IFD(0)
-        tiffdata.set_plane_count(1)
 
     def add_markers(self, updated_image_name, markerfile):
         logging.info("Creating ROIs")
