@@ -3,7 +3,7 @@ import logging
 from numpy.testing import assert_array_equal
 
 from .edge_definer import image_edge_definer
-from .image_normaliser import exposure_correct, normalise_to_datatype, cast_to_dtype
+from .image_normaliser import normalise_to_datatype, cast_to_dtype
 
 
 class Stitcher():
@@ -28,16 +28,7 @@ class Stitcher():
             fill_value = np.iinfo(self.dtype).max * normalise
             mosaic_array = np.full(mosaic_size, fill_value, dtype=self.dtype)
             
-            if normalise:
-                # Apply exposure correction
-                images = exposure_correct(unstitched.images, unstitched.exposure_minmax, self.brightfield_list)
-            else:
-                # Filter out unwanted images
-                images = unstitched.images[self.brightfield_list]
-            
-            # Convert to numpy array
-            images = np.asarray(unstitched.images[self.brightfield_list])
-
+            images = unstitched.images[self.brightfield_list]  # Filter out unwanted images
             if normalise:
                 # Rescale max/min to fit data type
                 images = normalise_to_datatype(images, self.dtype, trim=True)
