@@ -10,15 +10,11 @@ def stitch_and_save(mosaic_file, marker_file=None):
     
     The output will be saved as the mosaic filename, with the suffix '.ome.tiff' (or '_marked.ome.tiff' if markers are supplied), in same directory as the mosaic file.
     """
-    import logging
-
     from .run import main_run
     from .file_handler import get_config
-    from .log_handler import LogHandler
-    
+
     config, config_messages = get_config()
-    with LogHandler(config=config, config_messages=config_messages):
-        main_run(config, mosaic_file, marker_file)
+    main_run(config, mosaic_file, marker_file)
 
 
 def stitch(mosaic_file, marker_file=None):
@@ -32,15 +28,12 @@ def stitch(mosaic_file, marker_file=None):
         metadata (as an editable omexml object)
         tiff_file (the default path stitch_and_save would save to, as a string)
     """
-    import logging
-
     from .run import _stitch
     from .file_handler import get_config
-    from .log_handler import LogHandler
     
     config, config_messages = get_config()
-    with LogHandler(config=config, config_messages=config_messages):
-        return _stitch(config, mosaic_file, marker_file)
+    return _stitch(config, mosaic_file, marker_file)
+
 
 def save(mosaic, metadata, tiff_file):
     """
@@ -51,12 +44,6 @@ def save(mosaic, metadata, tiff_file):
     
     The output will be saved as the mosaic filename, with the suffix '.ome.tiff' (or '_marked.ome.tiff' if markers are supplied), in same directory as the mosaic file.
     """
-    import logging
-
     from .run import _save
-    from .file_handler import get_config
-    from .log_handler import LogHandler
-    
-    config, config_messages = get_config()
-    with LogHandler(config=config, config_messages=config_messages):
-        _save(mosaic, metadata, tiff_file)
+
+    _save(mosaic, metadata, tiff_file)
