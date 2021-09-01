@@ -4,11 +4,9 @@ import logging
 
 def _image_value_trimmer(image_stack):
     logging.info("Trimming brightest pixels")
-    new_stack = image_stack[:, :, :]
-    median_std = np.median([np.std(image) for image in image_stack])
-    median_median = np.median(image_stack)
-    new_max = median_median + 2.5 * median_std
-    return np.clip(new_stack, 0, new_max)
+    median_std = np.median(np.std(image_stack, axis=(1, 2)))
+    new_max = np.median(image_stack) + 2.5 * median_std
+    return np.clip(image_stack, 0, new_max)
 
 
 def exposure_correct(images, exposure_minmax, brightfield_image_list):
@@ -21,17 +19,11 @@ def exposure_correct(images, exposure_minmax, brightfield_image_list):
     images_min = images[brightfield_image_list].min()
     images_max = images[brightfield_image_list].max()
     images_range = images_max - images_min
-    corrected_images = []
-    for i in brightfield_image_list:
-        exp_min = exposure_minmax[i, 0]
-        exp_max = exposure_minmax[i, 1]
-        exp_range = exp_max - exp_min
-
-        normalisation_coefficient = images_range / exp_range
-
-        unbiased_img = (images[i, :, :] - exp_min) * normalisation_coefficient
-        corrected_images.append(unbiased_img)
-    return corrected_images
+    # make broadcastable with brightfield_image_list (propagates to multiplier)
+    exp_min = exposure_minmax[brightfield_image_list, 0, np.newaxis, np.newaxis]
+    exp_max = exposure_minmax[brightfield_image_list, 1, np.newaxis, np.newaxis]
+    multiplier = images_range / (exp_max - exp_min)
+    return (images[brightfield_image_list] - exp_min) * multiplier
 
 
 def normalise_to_datatype(corrected_images, datatype, trim=True):
