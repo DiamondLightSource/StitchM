@@ -12,7 +12,7 @@ requirements=[
     "tifffile>=2020.9.30",
     "mrcfile>=1.1.2",
     "numpy>=1.17.4",
-    "omexml-dls>=1.0.3",
+    "omexml-dls>=1.1.0",
     "pywin32;platform_system=='Windows'"
     ]
 
