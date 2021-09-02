@@ -3,7 +3,6 @@ from os import path
 from pathlib import Path
 import re
 import logging
-from numpy import genfromtxt
 
 
 marker_regex = re.compile(r'(.*)marker(.*).txt$', flags=re.I)
@@ -41,6 +40,7 @@ def get_mrc_file(arg, return_data=False):
         with txt_path.open('rb') as csvfile:
             mrc_path = Path(csvfile.readline().rstrip().decode('utf-8'))
             if return_data:
+                from numpy import genfromtxt
                 location_array = genfromtxt(csvfile, delimiter=",")
         
         if mrc_path.suffix.lower() == ".mrc":
