@@ -1,5 +1,5 @@
 {% set name = "StitchM" %}
-{% set version = "1.2.0" %}
+{% set version = "1.2.1" %}
 {% set import_name = "stitch_m" %}
 package:
   name: {{ name | lower }}
@@ -24,7 +24,7 @@ requirements:
     - numpy >=1.17.4
     - tifffile >=2020.9.30
     - mrcfile >=1.1.2
-    - omexml-dls >=1.0.3
+    - omexml-dls >=1.1.0
     - pywin32  # [win]
 
 test:
