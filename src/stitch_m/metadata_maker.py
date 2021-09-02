@@ -11,7 +11,6 @@ from .edge_definer import marker_edge_definer
 class MetadataMaker():
 
     def __init__(self, image_name, unstitched, brightfield_image_list, datatype):
-        logging.debug("Creating metadata")
         # Set up attributes and variables
         self.boundaries = unstitched.boundaries
         self.mosaic_centre = unstitched.mosaic_centre

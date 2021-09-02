@@ -3,18 +3,21 @@ from os import path
 from pathlib import Path
 import re
 import logging
+from numpy import genfromtxt
+
 
 marker_regex = re.compile(r'(.*)marker(.*).txt$', flags=re.I)
 
 local_config_file = Path(__file__).resolve().with_name("config.cfg")
 dragndrop_bat_file = Path(__file__).resolve().parent / "scripts" / "dragndrop.bat"
 
+
 def is_marker_file(arg):
     return marker_regex.match(path.basename(arg))
 
 
 def is_mosaic_file(arg):
-    return (".txt" in arg and path.exists(arg) and get_mrc_file(arg)[0] is not None)
+    return os.path.splitext(arg)[1].lower() == ".txt" and get_mrc_file(arg)
 
 
 def argument_organiser(arguments):
@@ -31,34 +34,41 @@ def argument_organiser(arguments):
     return args_out
 
 
-def get_mrc_file(arg, return_array=False):
+def get_mrc_file(arg, return_data=False):
     logging.debug("Opening file: %s", arg)
-    with open(str(arg), 'rb') as csvfile:
-        csvfile.seek(0)
-        filepath = path.abspath(csvfile.readline().rstrip().decode('utf-8'))
-        if return_array:
-            from numpy import genfromtxt
-            location_array = genfromtxt(csvfile, delimiter=",")
-    if ".mrc" in filepath.lower():
-        if not path.exists(filepath):
-            logging.warning("Cannot find path %s", filepath)
-            if "\\" in filepath:
-                #  Windows file paths
-                filepath = path.join(path.dirname(path.abspath(arg)), filepath.split("\\")[-1])
-            elif "/" in filepath:
-                # Unix file paths
-                filepath = path.join(path.dirname(path.abspath(arg)), filepath.split("/")[-1])
-            else:
-                filepath = path.join(path.dirname(path.abspath(arg)), path.basename(filepath))
-            if not path.exists(filepath):
-                logging.error("Cannot find path %s", filepath, exc_info=True)
-                raise IOError(f"Cannot find path {filepath}")
-            logging.warning("mrc file with the same name in the current directory will be used")
-        if return_array:
-            return filepath, location_array
-        return filepath, None
-    logging.error("Expected an mrc file, instead the txt file linked to %s", filepath)
-    raise IOError(f"Expected an mrc file, instead the txt file linked to {filepath}")
+    txt_path = Path(arg)
+    if txt_path.is_file():
+        with txt_path.open('rb') as csvfile:
+            mrc_path = Path(csvfile.readline().rstrip().decode('utf-8'))
+            if return_data:
+                location_array = genfromtxt(csvfile, delimiter=",")
+        
+        if mrc_path.suffix.lower() == ".mrc":
+            if not mrc_path.exists():
+                msg = ("Cannot find %s in the directory %s, "
+                    "so the current directory will be tried", mrc_path.name, mrc_path.parent)
+                if return_data:
+                    logging.warning(*msg)
+                else:
+                    logging.debug(*msg)
+                mrc_path = txt_path.parent / mrc_path.name
+                if not mrc_path.exists():
+                    if return_data:
+                        raise IOError(f"Cannot find path {mrc_path}")
+                    logging.error("%s cannot be found", mrc_path.name)
+                    return False
+            
+            if return_data:
+                return mrc_path.absolute(), location_array
+            return True
+        
+        elif return_data:
+            raise IOError(f"Expected an mrc file, instead the txt file linked to {mrc_path}")
+        logging.error("Mosaic txt file contains invalid mrc path: %s", mrc_path)
+    
+    elif return_data:
+        raise IOError(f"Mosaic txt file {txt_path} does not exist")
+    return False
 
 
 def _get_Windows_home_path():
@@ -127,7 +137,7 @@ def get_config():
             with open(user_config_file) as f:
                 config.read_file(f)
             return config, config_messages
-        except:
+        except Exception:
             config_messages.append(f"Opening user config file failed. Please delete your existing file and try again! (Expected path: {user_config_file})")
     with open(local_config_file) as f:
             config.read_file(f)
@@ -145,7 +155,7 @@ def create_user_config():
             logging.info("Creating user config file in path %s.", str(user_config_file))
             copyfile(local_config_file, user_config_file)
             logging.info("User config file has been created in %s. This file will override default settings.", str(user_config_file))
-        except:
+        except Exception:
             logging.error("Unable to create user config file due to directory issues", exc_info=True)
     else:
         logging.error("Unable to create user config file")

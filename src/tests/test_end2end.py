@@ -46,7 +46,7 @@ expected_marked_outputs = [
 test_config = Path(__file__).resolve().with_name("config.cfg")
 
 
-@unittest.skipUnless(base_path.exists(), "dls paths cannot be accessed")
+@unittest.skipUnless(base_path.exists(), "base path cannot be accessed")
 class EndToEndTests(unittest.TestCase):
 
     @classmethod

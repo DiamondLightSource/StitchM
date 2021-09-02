@@ -23,20 +23,20 @@ class LogHandler():
         self.logger = self._create_or_setup(file_level, stream_level, log_to_file, backup_count, config, config_messages)
 
     def __enter__(self, file_level="debug", stream_level="info", log_to_file=False, backup_count=10, config=None, config_messages=None):
-        self.logger = self._create_or_setup(file_level, stream_level, log_to_file, backup_count, config, config_messages)
         return self.logger
 
     def __exit__(self, et, ev, tb):
-        self.close_handlers()
+        self.close()
 
     def get_logger(self):
         return self.logger
 
-    def close_handlers(self):
+    def close(self):
         handlers = self.logger.handlers
         for handler in handlers:
             handler.close()
             self.logger.removeHandler(handler)
+        logging.shutdown()
 
     def _create_or_setup(self, file_level="debug", stream_level="info", log_to_file=False, backup_count=10, config=None, config_messages=None):
         if config:
@@ -96,7 +96,7 @@ class LogHandler():
         stream_handler.setFormatter(stream_format)
 
         logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.NOTSET)
         stream_handler.setLevel(stream_level)
         logger.addHandler(stream_handler)
 
