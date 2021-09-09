@@ -13,7 +13,7 @@ def stitch_and_save(mosaic_file, marker_file=None):
     from .run import main_run
     from .file_handler import get_config
 
-    config, config_messages = get_config()
+    config, _ = get_config()
     main_run(config, mosaic_file, marker_file)
 
 
@@ -31,7 +31,7 @@ def stitch(mosaic_file, marker_file=None):
     from .run import _stitch
     from .file_handler import get_config
     
-    config, config_messages = get_config()
+    config, _ = get_config()
     return _stitch(config, mosaic_file, marker_file)
 
 

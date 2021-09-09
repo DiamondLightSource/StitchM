@@ -70,10 +70,12 @@ def main():
         from .log_handler import LogHandler
         from .run import main_run
 
-        config, config_messages = get_config()
-        with LogHandler(config=config, config_messages=config_messages):
-            kwargs = vars(args)
-            logging.info("Stitching with args: %s", ", ".join(f"{k}={v}" for k, v in kwargs.items()))
-            main_run(config, **kwargs)
+        try:
+            config, config_messages = get_config()
+            with LogHandler(config=config, config_messages=config_messages):
+                kwargs = vars(args)
+                main_run(config, **kwargs)
+        except Exception:
+            logging.error('Error has occurred. Please see traceback for more info.', exc_info=True)
     else:
         parser.print_help()
