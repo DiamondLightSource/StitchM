@@ -54,7 +54,7 @@ def _stitch(config, mosaic, markers, normalise):
             unstitched = UnstitchedImage(mosaic_path)
             stitcher = Stitcher(dtype)
             mosaic_array = stitcher.make_mosaic(unstitched, boolean_config_handler(config, 'PROCESSING', 'filter', default=True), normalise)
-            metadata_creator = MetadataMaker(tiff_path.name, unstitched, stitcher.get_brightfield_list(), dtype)
+            metadata_creator = MetadataMaker(tiff_path.name, unstitched, dtype)
 
             if markers is not None and is_marker_file(markers) and Path(markers).is_file():
                 tiff_name = tiff_path.name.replace(".ome.tiff", "_marked.ome.tiff")
