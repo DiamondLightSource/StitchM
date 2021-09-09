@@ -7,8 +7,7 @@ from numpy.testing import assert_array_equal
 
 from stitch_m import file_handler
 
-# base_path = Path("/dls/science/groups/das/ExampleData/B24_test_data/StitchM_test_data/files/")
-base_path = Path("C:/Users/rky95813\OneDrive - Diamond Light Source Ltd/Documents/files")
+base_path = Path("/dls/science/groups/das/ExampleData/B24_test_data/StitchM_test_data/files/")
 test_file = base_path / "Fid_T2G3_mosaic.txt"
 test_marker_file = base_path / "Fid_T2G3_markers.txt"
 bad_file = base_path / "bad_file.txt"
