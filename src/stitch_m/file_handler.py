@@ -38,24 +38,33 @@ def get_mrc_file(arg, return_data=False):
     txt_path = Path(arg)
     if txt_path.is_file():
         with txt_path.open('rb') as csvfile:
-            mrc_path = Path(csvfile.readline().rstrip().decode('utf-8'))
+            mrc_path = csvfile.readline().rstrip().decode('utf-8')
             if return_data:
                 from numpy import genfromtxt
                 location_array = genfromtxt(csvfile, delimiter=",")
         
-        if mrc_path.suffix.lower() == ".mrc":
-            if not mrc_path.exists():
-                msg = ("Cannot find %s in the directory %s, "
-                    "so the current directory will be tried", mrc_path.name, mrc_path.parent)
+        if path.splitext(mrc_path)[1].lower() == ".mrc":
+            if not path.exists(mrc_path):
+                msg = (
+                    "Cannot find %s, so the current directory will be tried",
+                    mrc_path)
                 if return_data:
                     logging.warning(*msg)
                 else:
                     logging.debug(*msg)
-                mrc_path = txt_path.parent / mrc_path.name
+                if "\\" in mrc_path:
+                    #  Windows file paths
+                    mrc_name  = mrc_path.split("\\")[-1]
+                elif "/" in mrc_path:
+                    # Unix file paths
+                    mrc_name = mrc_path.split("/")[-1]
+                else:
+                    mrc_name =  path.basename(mrc_path)
+                mrc_path = txt_path.parent / mrc_name
                 if not mrc_path.exists():
                     if return_data:
                         raise IOError(f"Cannot find path {mrc_path}")
-                    logging.error("%s cannot be found", mrc_path.name)
+                    logging.error("%s cannot be found", mrc_path)
                     return False
             
             if return_data:
@@ -68,6 +77,7 @@ def get_mrc_file(arg, return_data=False):
     
     elif return_data:
         raise IOError(f"Mosaic txt file {txt_path} does not exist")
+    logging.error("Invalid txt file: %s", arg)
     return False
 
 
