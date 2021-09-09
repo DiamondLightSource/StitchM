@@ -49,17 +49,18 @@ def _stitch(config, mosaic, markers, normalise):
     try:
         if is_mosaic_file(mosaic):
             mosaic_path = Path(mosaic).resolve()  # Gets absolute path of mosaic file
-            tiff_filename = str(mosaic_path.with_suffix(".ome.tiff"))
+            tiff_path = mosaic_path.with_suffix(".ome.tiff")
 
             unstitched = UnstitchedImage(mosaic_path)
             stitcher = Stitcher(dtype)
             mosaic_array = stitcher.make_mosaic(unstitched, boolean_config_handler(config, 'PROCESSING', 'filter', default=True), normalise)
-            metadata_creator = MetadataMaker(tiff_filename, unstitched, stitcher.get_brightfield_list(), dtype)
+            metadata_creator = MetadataMaker(tiff_path.name, unstitched, stitcher.get_brightfield_list(), dtype)
 
             if markers is not None and is_marker_file(markers) and Path(markers).is_file():
-                tiff_filename = tiff_filename.replace(".ome.tiff", "_marked.ome.tiff")
-                metadata_creator.add_markers(tiff_filename, markers)
-            return mosaic_array, metadata_creator.get(), tiff_filename
+                tiff_name = tiff_path.name.replace(".ome.tiff", "_marked.ome.tiff")
+                tiff_path = tiff_path.parent / tiff_name
+                metadata_creator.add_markers(tiff_name, markers)
+            return mosaic_array, metadata_creator.get(), str(tiff_path)
         else:
             logging.error("Mosaic file path cannot be resolved")
             raise IOError("Mosaic file path cannot be resolved")
