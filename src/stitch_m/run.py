@@ -1,4 +1,3 @@
-import os
 import sys
 import logging
 
@@ -21,7 +20,6 @@ def sort_args_then_run():
                     create_user_config()
 
         config, config_messages = get_config()
-        wait_on_fail = boolean_config_handler(config, 'OTHER', 'wait upon failure', default=True)
         with LogHandler(config=config, config_messages=config_messages):
             logging.info("StitchM given arguments: %s", argv)
             args = argument_organiser(argv)
@@ -30,14 +28,17 @@ def sort_args_then_run():
                 if len(args) > 2:
                     args = args[0:2]
                 main_run(config, *args)
+                if boolean_config_handler(config, 'OTHER', 'wait upon completion', default=False):
+                    input("Processing complete! Press enter to exit")
+                return
             else:
                 logging.error("No valid mosaic file")
-            if wait_on_fail:
-                input("Processing failed! Press enter to exit")
-    except:
-        logging.error("Unknown error occurred", exc_info=True)
-        if wait_on_fail:
-            input("Processing failed! Press enter to exit")
+    except IOError:
+        logging.error('Error has occurred while stitching or saving mosaic. Please see traceback for more info.', exc_info=True)
+    except Exception:
+        logging.error("Unknown error occurred. Please see traceback for more info.", exc_info=True)
+    if boolean_config_handler(config, 'OTHER', 'wait upon failure', default=True):
+        input("Processing failed! Press enter to exit")
 
 def _stitch(config, mosaic, markers, normalise):
     from pathlib import Path
@@ -63,7 +64,7 @@ def _stitch(config, mosaic, markers, normalise):
         else:
             logging.error("Mosaic file path cannot be resolved")
             raise IOError("Mosaic file path cannot be resolved")
-    except:
+    except Exception:
         arg_string = ", ".join((str(mosaic or None), str(markers or None), str(normalise)))
         logging.error("Invalid arguments: %s", arg_string, exc_info=True)
         if boolean_config_handler(config, 'OTHER', 'wait upon failure', default=True):
@@ -84,7 +85,7 @@ def _save(mosaic, metadata, tiff_filename):
                 photometric='MINISBLACK',
                 metadata={'axes':'YX'},
                 software=f"StitchM {__version__}")
-    except:
+    except Exception:
         logging.error("Cannot save: %s", tiff_filename, exc_info=True)
         raise IOError("Cannot save: {}".format(tiff_filename))
 
@@ -98,13 +99,5 @@ def main_run(config, mosaic, markers=None, normalise=True):
     The output will be saved as the mosaic filename, with the suffix '.ome.tiff' (or '_marked.ome.tiff' if markers are supplied), in same directory as the mosaic file.
     """
     logging.info("Running StitchM with arguments: mosaic=%s, markers=%s, normalise=%s", mosaic, markers, normalise)
-    from .file_handler import boolean_config_handler
-    try:
-        mosaic, metadata, tiff_file = _stitch(config, mosaic, markers, normalise)
-        _save(mosaic, metadata, tiff_file)
-        if boolean_config_handler(config, 'OTHER', 'wait upon completion', default='false'):
-            input("Processing complete. Press enter to exit")
-    except:
-        logging.error('Error has occurred while stitching or saving mosaic. Please see traceback for more info.', exc_info=True)
-        if boolean_config_handler(config, 'OTHER', 'wait upon failure', default='true'):
-            input("Processing failed! Press enter to exit")
+    mosaic, metadata, tiff_file = _stitch(config, mosaic, markers, normalise)
+    _save(mosaic, metadata, tiff_file)
