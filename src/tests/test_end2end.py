@@ -10,6 +10,14 @@ from pathlib import Path
 
 from stitch_m import file_handler, stitch_and_save
 
+# To quickly update the files:
+# - Comment out file removal in tearDownClass
+# - Comment out file opening and comparisons
+# - Delete old expected_output files
+# - Within the base_path dir, run:
+#   for f in *.ome.tiff; do mv "$f" `echo ${f} | sed 's/.ome.tiff/_expected_output.ome.tiff/'`; done
+# - Uncommented out code commented out above
+
 base_path = Path("/dls/science/groups/das/ExampleData/B24_test_data/StitchM_test_data/files")
 test_files = (
     base_path / "B15Grid2.txt",
@@ -41,7 +49,7 @@ expected_outputs = [
     path.replace(".txt", "_expected_output.ome.tiff")
     for path in test_files]
 expected_marked_outputs = [
-    path.replace(".txt", "_expected_output_marked.ome.tiff")
+    path.replace(".txt", "_marked_expected_output.ome.tiff")
     for path in test_files]
 test_config = Path(__file__).resolve().with_name("config.cfg")
 
@@ -76,6 +84,7 @@ class EndToEndTests(unittest.TestCase):
 
     @patch('stitch_m.file_handler')
     def test_end2end_with_markers(self, mocked_file_handler):
+        self.maxDiff = 8000  # Set diff so that all metadata can be read
         mocked_file_handler.local_config_file.return_value = test_config
         for i in range(len(test_files)):
             test_file = test_files[i]
@@ -92,4 +101,6 @@ class EndToEndTests(unittest.TestCase):
                 expected_metadata = tif.ome_metadata
 
             assert_array_equal(output_image, expected_image)
-            self.assertEqual(output_metadata, expected_metadata, msg="Metadata should match")
+            self.assertEqual(
+                output_metadata, expected_metadata,
+                msg=f"Metadata should match for {output_path} & {expected_marked_outputs[i]}\n")
