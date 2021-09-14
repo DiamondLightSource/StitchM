@@ -68,7 +68,7 @@ def get_mrc_file(arg, return_data=False):
                     return False
             
             if return_data:
-                return mrc_path.absolute(), location_array
+                return path.abspath(mrc_path), location_array
             return True
         
         elif return_data:
