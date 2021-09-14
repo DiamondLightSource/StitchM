@@ -40,7 +40,6 @@ class TestEntryPointCommandline(unittest.TestCase):
         mocked_printhelp.assert_called_once()
 
     def test_commandline_function_setup_config(self):
-        local_config_file = Path(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "stitch_m", "config.cfg"))
         with patch('stitch_m.file_handler.create_user_config', MagicMock()) as mocked_config_creator:
             sys.argv = ["StitchM", "setup", "--config"]
             commandline.main()
@@ -48,7 +47,6 @@ class TestEntryPointCommandline(unittest.TestCase):
             mocked_config_creator.assert_called_once()
 
     def test_commandline_function_setup_windows_shortcut(self):
-        local_config_file = Path(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "stitch_m", "config.cfg"))
         with patch('stitch_m.file_handler.create_Windows_shortcut', MagicMock()) as mocked_shortcut_creator:
             sys.argv = ["StitchM", "setup", "-w"]
             commandline.main()
