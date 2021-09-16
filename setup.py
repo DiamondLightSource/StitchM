@@ -1,4 +1,3 @@
-from os import path
 import sys
 import setuptools
 
@@ -11,7 +10,7 @@ with open("README.md", "r") as fh:
 requirements=[
     "tifffile>=2020.9.30",
     "mrcfile>=1.1.2",
-    "numpy>=1.17.4",
+    "numpy>=1.21.1",
     "omexml-dls>=1.1.0",
     "pywin32;platform_system=='Windows'"
     ]
@@ -46,7 +45,7 @@ setuptools.setup(
     python_requires='>=3.7',
     entry_points={
         'console_scripts': [
-            "StitchM = stitch_m.scripts.commandline:main"
+            "StitchM = stitch_m.scripts.commandline:main",
             "stitchm = stitch_m.scripts.commandline:main"
             ]
             },
