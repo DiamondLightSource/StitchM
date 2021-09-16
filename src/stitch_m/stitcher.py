@@ -29,12 +29,13 @@ class Stitcher():
             mosaic_array = np.full(mosaic_size, fill_value, dtype=self.dtype)
             
             images = unstitched.images[self.brightfield_list]  # Filter out unwanted images
+            unstitched.clear_image_array()
             if normalise:
                 # Rescale max/min to fit data type
                 images = normalise_to_datatype(images, self.dtype, trim=True)
             
             # Cast to output data type
-            preprocessed_images = cast_to_dtype(images, self.dtype)
+            images = cast_to_dtype(images, self.dtype)
 
             for i in range(len(self.brightfield_list)):
                 start, end = image_edge_definer(
@@ -44,7 +45,8 @@ class Stitcher():
                     )
                 # Array needs to be transposed for python versus dv.
                 # This rotates each image so they line up correctly
-                mosaic_array[start[0]:end[0], start[1]:end[1]] = preprocessed_images[i, :, :].T
+                mosaic_array[start[0]:end[0], start[1]:end[1]] = images[i, :, :].T
+            del(images)
             # Rotate back and flip
             return np.flip(mosaic_array.T, 0)
         else:
@@ -88,7 +90,7 @@ class Stitcher():
         else:
             logging.info(
                 "Potential fluorescence images found: '%s' (counted from 0)",
-                ", ".join([str(i) for i in np.setdiff1d(full_list, good_list)])
+                ", ".join(map(str, np.setdiff1d(full_list, good_list)))
                  )
         if len(good_list) > img_count / 2:
             return good_list

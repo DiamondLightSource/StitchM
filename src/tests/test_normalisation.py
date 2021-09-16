@@ -16,9 +16,17 @@ class NormalisationTests(unittest.TestCase):
     def test_normalise_to_datatype(self):
         image = np.arange(6524, 6536).reshape(3, 4)
         images = np.array([image, image])
-        image_out = image_normaliser.normalise_to_datatype(images, self.dtype)
+        image_out = image_normaliser.normalise_to_datatype(images, self.dtype, True)
         self.assertTrue((image_out.max() == self.image_max), msg=f"image max {image_out.max()} is not {self.image_max}")
         self.assertTrue((image_out.min() == 0), msg=f"image min {image_out.min()} is not 0")
+
+    def test_normalise_to_datatype_no_trim(self):
+        image = np.arange(6524, 6536).reshape(3, 4)
+        images = np.array([image, image])
+        image_out = image_normaliser.normalise_to_datatype(images, self.dtype, False)
+        self.assertTrue((image_out.max() == self.image_max), msg=f"image max {image_out.max()} is not {self.image_max}")
+        self.assertTrue((image_out.min() == 0), msg=f"image min {image_out.min()} is not 0")
+
 
     def test_normalise_simple_minmax_image(self):
         image = np.linspace(524, 5536, 12).reshape(3, 4)
