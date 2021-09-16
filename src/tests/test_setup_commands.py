@@ -1,10 +1,8 @@
 import os
-import sys
 import unittest
 import pathlib
 from pathlib import Path
-from unittest.mock import patch, MagicMock, ANY
-import subprocess
+from unittest.mock import patch, MagicMock
 
 import stitch_m
 from stitch_m.file_handler import create_user_config, create_Windows_shortcut, _create_lnk_file

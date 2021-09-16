@@ -2,7 +2,6 @@ import unittest
 from unittest.mock import patch, MagicMock, call
 from tempfile import TemporaryDirectory
 
-import logging
 from pathlib import Path
 from io import StringIO
 

@@ -1,7 +1,6 @@
 import os
 import sys
 import unittest
-from pathlib import Path
 from unittest.mock import patch, MagicMock, ANY
 from subprocess import Popen, PIPE, STDOUT
 from time import sleep

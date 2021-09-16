@@ -4,7 +4,6 @@ from numpy.testing import assert_array_equal
 
 import os
 import tifffile as tf
-import numpy as np
 from pathlib import Path
 
 
