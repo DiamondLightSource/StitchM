@@ -13,6 +13,7 @@ build:
   script: {{ PYTHON }} -m pip install . -vv
   entry_points:
     - {{ name }} = {{ import_name }}.scripts.commandline:main
+    - {{ name | lower }} = {{ import_name }}.scripts.commandline:main
   skip: true  # [py<37]
 
 requirements:
