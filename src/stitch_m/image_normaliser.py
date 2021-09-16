@@ -26,25 +26,27 @@ def exposure_correct(images, exposure_minmax, brightfield_image_list):
     return (images[brightfield_image_list] - exp_min) * multiplier
 
 
-def normalise_to_datatype(corrected_images, datatype, trim=True):
-    logging.info("Re-scaling images to %s", datatype)
+def normalise_to_datatype(images, datatype, trim=True):
     # Trim images before correction to avoid any speckles
     # leading to the entire image to be quite dark:
-    if trim: corrected_images = _image_value_trimmer(corrected_images)
+    if trim:
+        images = _image_value_trimmer(images)
+    else:
+        images = images.astype(np.float64)  # Convert to float for rescaling
 
-    corrected_images = np.asarray(corrected_images).astype(np.float64)  # Convert to float for rescaling
+    logging.info("Re-scaling images to %s", datatype)
+    
     # Move minimum value of all corrected images to 0:
-    corrected_min = corrected_images.min()
-    corrected_images -= corrected_min
+    np.subtract(images, images.min(), out=images)
     # Convert values to float and rescale so the maximum
     # is set by datatype:
-    corrected_max = corrected_images.max()
     # New max should be 1 less than the max allowed by datatype
     # so that the background (max) can be made transparent without losing data
     new_max = (np.iinfo(datatype).max - 1)
-    rescaled_images = corrected_images * (new_max / corrected_max)
-    
-    return rescaled_images
+    multiplier = new_max / images.max()
+    np.multiply(images, multiplier, out=images)
+    return images
+
 
 def cast_to_dtype(image, data_type):
     try:
@@ -53,20 +55,20 @@ def cast_to_dtype(image, data_type):
             dtype_info = np.iinfo(dtype)
             # Round min/max to avoid this warning when the issue is just going to be rounded away.
             img_min, img_max = round(image.min()), round(image.max())
-            if dtype_info.min > img_min:
-                logging.warning(
-                    "Image min %f below %s minimum of %i, values below this will be cut off",
-                    img_min, dtype, dtype_info.min)
-                _conditional_replace(image, dtype_info.min, lambda x: x < dtype_info.min)
-            if dtype_info.max < img_max:
-                logging.warning(
-                    "Image max %f above %s maximum of %i, values above this will be cut off",
-                    img_max, dtype, dtype_info.max)
-                _conditional_replace(image, dtype_info.max, lambda x: x > dtype_info.max)
-        return np.around(image, decimals=0).astype(dtype)
+            min_clip = dtype_info.min > img_min
+            max_clip = dtype_info.max < img_max
+            if min_clip or max_clip:
+                if min_clip:
+                    logging.warning(
+                        "Image min %f below %s minimum of %i, values below this will be cut off",
+                        img_min, dtype, dtype_info.min)
+                if max_clip:
+                    logging.warning(
+                        "Image max %f above %s maximum of %i, values above this will be cut off",
+                        img_max, dtype, dtype_info.max)
+                np.clip(image, dtype_info.min, dtype_info.max, out=image)
+        np.around(image, decimals=0, out=image)
+        return image.astype(dtype)
     except Exception:
         logging.error("Invalid data type given: %s aka %s. Saving with default data type.", data_type, dtype)
     return image
-
-def _conditional_replace(array, replacement, condition_func):
-    array[condition_func(array)] = replacement

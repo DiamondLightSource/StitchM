@@ -50,5 +50,7 @@ setuptools.setup(
             ]
             },
     test_suite='src.tests',
-    tests_require=[]
+    extras_require={
+        "scalene": ["scalene"],
+    }
 )

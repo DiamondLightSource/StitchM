@@ -67,3 +67,6 @@ class UnstitchedImage():
                           min_coords[1] - self.pix2edge[1]],
                          [max_coords[0] + self.pix2edge[0],
                           max_coords[1] + self.pix2edge[1]]], dtype=int)
+
+    def clear_image_array(self):
+        del(self.images)
