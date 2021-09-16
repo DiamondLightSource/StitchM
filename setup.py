@@ -47,6 +47,7 @@ setuptools.setup(
     entry_points={
         'console_scripts': [
             "StitchM = stitch_m.scripts.commandline:main"
+            "stitchm = stitch_m.scripts.commandline:main"
             ]
             },
     test_suite='src.tests',
