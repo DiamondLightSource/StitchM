@@ -1,7 +1,6 @@
 {   
-    "python.condaPath": "C:\\Users\\rky95813\\Miniconda3\\bin",
-    "python.pythonPath": "C:\\Users\\rky95813\\Miniconda3\\envs\\b24\\python.exe",
-    "python.envFile": "${workspaceFolder}/.vscode/test.env",
+    "python.defaultInterpreterPath": "~/miniconda3/bin/python",
+    // "python.envFile": "${workspaceFolder}/.vscode/test.env",
     "python.terminal.executeInFileDir": false,
     "python.terminal.activateEnvironment": true,
     "python.testing.nosetestArgs": [

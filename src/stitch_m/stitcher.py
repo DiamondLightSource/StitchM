@@ -61,8 +61,8 @@ class Stitcher():
         """
         This returns a list of indices of "good" images (i.e. not fluorescent 
         images).
-        This is based on the min/max values of fluorescent images being 
-        lower than the median - 0.5 * std deviation of the min/max of all the  
+        This is based on the min values of fluorescent images being 
+        lower than the (median - std deviation) of the min of all the  
         images.
 
         This method is not valid if there are too many fl images to bf images,
@@ -78,12 +78,9 @@ class Stitcher():
         median_min = np.median(minmax[:, 0])
         std_min = np.std(minmax[:, 0])
 
-        median_max = np.median(minmax[:, 1])
-        std_max = np.std(minmax[:, 1])
-
-        good_list = np.nonzero(np.logical_and(
-            minmax[:, 1] > median_max - 0.5 * std_max,
-            minmax[:, 0] > median_min - 0.5 * std_min))[0].tolist()
+        good_list = np.nonzero(
+            minmax[:, 0] > median_min - std_min
+            )[0].tolist()
 
         if len(good_list) == img_count:
             logging.info("No potential fluorescence images found.")

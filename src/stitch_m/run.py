@@ -27,7 +27,7 @@ def sort_args_then_run():
             if args[0] is not None:
                 if len(args) > 2:
                     args = args[0:2]
-                main_run(config, *args)
+                main_run(config, boolean_config_handler(config, 'PROCESSING', 'filter', default=True), *args)
                 if boolean_config_handler(config, 'OTHER', 'wait upon completion', default=False):
                     input("Processing complete! Press enter to exit")
                 return
@@ -40,7 +40,7 @@ def sort_args_then_run():
     if boolean_config_handler(config, 'OTHER', 'wait upon failure', default=True):
         input("Processing failed! Press enter to exit")
 
-def _stitch(config, mosaic, markers, normalise):
+def _stitch(config, mosaic, markers, normalise, fl_filter):
     from pathlib import Path
     from .file_handler import is_mosaic_file, is_marker_file, boolean_config_handler
     from .unstitched_image import UnstitchedImage
@@ -54,7 +54,7 @@ def _stitch(config, mosaic, markers, normalise):
 
             unstitched = UnstitchedImage(mosaic_path)
             stitcher = Stitcher(dtype)
-            mosaic_array = stitcher.make_mosaic(unstitched, boolean_config_handler(config, 'PROCESSING', 'filter', default=True), normalise)
+            mosaic_array = stitcher.make_mosaic(unstitched, fl_filter, normalise)
             metadata_creator = MetadataMaker(tiff_path.name, unstitched, dtype)
 
             if markers is not None and is_marker_file(markers) and Path(markers).is_file():
@@ -90,7 +90,7 @@ def _save(mosaic, metadata, tiff_filename):
         logging.error("Cannot save: %s", tiff_filename, exc_info=True)
         raise IOError("Cannot save: {}".format(tiff_filename))
 
-def main_run(config, mosaic, markers=None, normalise=True):
+def main_run(config, mosaic, markers=None, normalise=True, fl_filter=True):
     """
     PARAMETERS:
         mosaic - Path of .txt file that contains the mosaic information, including the path to the .mrc file
@@ -99,6 +99,6 @@ def main_run(config, mosaic, markers=None, normalise=True):
     
     The output will be saved as the mosaic filename, with the suffix '.ome.tiff' (or '_marked.ome.tiff' if markers are supplied), in same directory as the mosaic file.
     """
-    logging.info("Running StitchM with arguments: mosaic=%s, markers=%s, normalise=%s", mosaic, markers, normalise)
-    mosaic, metadata, tiff_file = _stitch(config, mosaic, markers, normalise)
+    logging.info("Running StitchM with arguments: mosaic=%s, markers=%s, normalise=%s, fl_filter=%s", mosaic, markers, normalise, fl_filter)
+    mosaic, metadata, tiff_file = _stitch(config, mosaic, markers, normalise, fl_filter)
     _save(mosaic, metadata, tiff_file)
