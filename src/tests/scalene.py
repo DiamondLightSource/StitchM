@@ -17,7 +17,8 @@ test_files = (
     base_path / "B8G1-IR_mosaic.txt",
     base_path / "B8G2-IR_mosaic.txt",
     base_path / "Fid_T2G3_mosaic.txt",
-    base_path / "Yo10_G3_mosaic.txt"
+    base_path / "Yo10_G3_mosaic.txt",
+    base_path / "PP4_G2_mosaic.txt"
     )
 
 test_marker_files = (
@@ -25,7 +26,8 @@ test_marker_files = (
     base_path / "B8G1-IR_markers.txt",
     base_path / "B8G2-IR_markers.txt",
     base_path / "Fid_T2G3_markers.txt",
-    base_path / "Yo10_G3_mosaic_MARKERS.txt"
+    base_path / "Yo10_G3_mosaic_MARKERS.txt",
+    base_path / "PP4_G2_markers.txt"
     )
 
 for mos, mar in zip(test_files, test_marker_files):

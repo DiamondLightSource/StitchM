@@ -58,8 +58,22 @@ class TestEntryPointCommandline(unittest.TestCase):
             kwargs['mosaic'] = "mosaic_path"
             kwargs['markers'] = "marker_path"
             kwargs['normalise'] = True
+            kwargs['fl_filter'] = True
 
             sys.argv =["StitchM", "--mosaic", kwargs['mosaic'], "--markers", kwargs['markers']]
+            commandline.main()
+
+            main_run.assert_called_once_with(ANY, **kwargs)
+
+    def test_commandline_function_with_args_normalise_filter(self, ):
+        with patch('stitch_m.run.main_run', MagicMock()) as main_run:
+            kwargs = {}
+            kwargs['mosaic'] = "mosaic_path"
+            kwargs['markers'] = "marker_path"
+            kwargs['normalise'] = False
+            kwargs['fl_filter'] = False
+
+            sys.argv =["StitchM", "--mosaic", kwargs['mosaic'], "--markers", kwargs['markers'], "--unfiltered", "--no-normalisation"]
             commandline.main()
 
             main_run.assert_called_once_with(ANY, **kwargs)
