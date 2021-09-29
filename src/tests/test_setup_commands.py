@@ -1,11 +1,12 @@
 import os
+import logging
 import unittest
 import pathlib
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 import stitch_m
-from stitch_m.file_handler import create_user_config, create_Windows_shortcut, _create_lnk_file
+from stitch_m.file_handler import create_user_config, create_Windows_shortcut, _create_lnk_file, _get_desktop_path
 
 class TestSetupFunctions(unittest.TestCase):
 
@@ -48,7 +49,16 @@ class TestSetupFunctions(unittest.TestCase):
         with patch('stitch_m.file_handler._create_lnk_file', MagicMock()) as mocked_shortcut_creator:
             create_Windows_shortcut()
             if os.name == "nt":
-                mocked_shortcut_creator.assert_called_once_with(Path(os.environ["HOMEDRIVE"]) / os.environ["HOMEPATH"] / "Desktop" / "StitchM.lnk")
+                home_dir = Path(os.environ["HOMEDRIVE"]) / os.environ["HOMEPATH"]
+                try:
+                    desktop = _get_desktop_path()
+                    self.assertTrue(desktop.relative_to(home_dir), "Invalid desktop found")
+                except Exception:
+                    logging.warning("_get_desktop_path failed")
+                    desktop = home_dir / "Desktop"
+
+                self.assertTrue(desktop.is_dir(), "Invalid desktop found")
+                mocked_shortcut_creator.assert_called_once_with(desktop / "StitchM.lnk")
             else:
                 mocked_error.assert_called_once_with("This command is only valid on Windows installations.")
 

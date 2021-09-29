@@ -188,6 +188,8 @@ def _create_lnk_file(shortcut_path):
         print(msg)
         logging.error(msg)
         raise
+    if not dragndrop_bat_file.is_file():
+        raise FileNotFoundError(f"{dragndrop_bat_file} not found!")
     shell = win32com.client.Dispatch("WScript.Shell")
     shortcut = shell.CreateShortCut(str(shortcut_path))
     shortcut.Targetpath = str(dragndrop_bat_file)
@@ -197,25 +199,61 @@ def _create_lnk_file(shortcut_path):
     logging.info(msg)
 
 
+def _get_desktop_path():
+    """
+    Gets correct Windows desktop path even if it's been moved from the default 
+    location.
+
+    Falls back on default location from environment variables if win32 method 
+    fails.
+
+    Raises:
+        ImportError: if win32com import fails
+        OSError: if found desktop path is not a directory
+
+    Returns:
+        pathlib.Path: Path to Windows desktop
+    """
+    try:
+        # win23com is from the package pywin32, only available in Windows
+        from win32com.shell import shell, shellcon
+    except ImportError:
+        msg = "win32com of pywin32 cannot be imported! Please run 'pip install pywin32' (with '--user' argument if on a shared python environment) then try again."
+        print(msg)
+        logging.error(msg)
+        raise
+    try:
+        desktop = Path(shell.SHGetFolderPath(0, shellcon.CSIDL_DESKTOP, 0, 0))
+    except Exception:
+        logging.warning("Unable to get desktop path from shell, falling back on environment variables")
+        desktop = _get_Windows_home_path() / "Desktop"
+    if not desktop.is_dir():
+        raise OSError("Desktop could not be found")
+    return desktop
+
+
 def create_Windows_shortcut():
     if os.name != "nt":
         logging.error("This command is only valid on Windows installations.")
         return 
     else:
-        # Place link on users desktop
-        shortcut_path = _get_Windows_home_path() / "Desktop" / "StitchM.lnk"
-        msg = f"Creating shortcut on user desktop: {shortcut_path}"
-        logging.info(msg)
-        if shortcut_path.exists():
-            msg = f"StitchM shortcut found:'{shortcut_path}'. Are you sure you want to replace it? (y/N)"
-            user_input = str(input(msg))
-            logging.debug(msg)
-            logging.debug("User input: %s", user_input)
-            if user_input.lower() == "y" or user_input.lower() == "yes":
-                logging.info("The existing shortcut will be replaced.")
-            elif user_input.lower() == "n" or user_input.lower() == "no":
-                logging.info("The existing shortcut will not be modified.")
-            else:
-                logging.info("Invalid input: %s. The existing shortcut will not be modified.", user_input)
-                return
-        _create_lnk_file(shortcut_path)
+        try:
+            # Place link on users desktop
+            shortcut_path = _get_desktop_path() / "StitchM.lnk"
+            msg = f"Creating shortcut on user desktop: {shortcut_path}"
+            logging.info(msg)
+            if shortcut_path.exists():
+                msg = f"StitchM shortcut found:'{shortcut_path}'. Are you sure you want to replace it? (y/N)"
+                user_input = str(input(msg))
+                logging.debug(msg)
+                logging.debug("User input: %s", user_input)
+                if user_input.lower() == "y" or user_input.lower() == "yes":
+                    logging.info("The existing shortcut will be replaced.")
+                elif user_input.lower() == "n" or user_input.lower() == "no":
+                    logging.info("The existing shortcut will not be modified.")
+                else:
+                    logging.info("Invalid input: %s. The existing shortcut will not be modified.", user_input)
+                    return
+            _create_lnk_file(shortcut_path)
+        except Exception:
+            logging.error("Failed to create shortcut", exc_info=True)
