@@ -1,5 +1,5 @@
 import os
-from os import path
+from sys import executable
 from pathlib import Path
 import re
 import logging
@@ -8,15 +8,17 @@ import logging
 marker_regex = re.compile(r'(.*)marker(.*).txt$', flags=re.I)
 
 local_config_file = Path(__file__).resolve().with_name("config.cfg")
-dragndrop_bat_file = Path(__file__).resolve().parent / "scripts" / "dragndrop.bat"
 
 
 def is_marker_file(arg):
-    return marker_regex.match(path.basename(arg))
+    return os.path.isfile(arg) and marker_regex.match(os.path.basename(arg))
 
 
 def is_mosaic_file(arg):
-    return os.path.splitext(arg)[1].lower() == ".txt" and get_mrc_file(arg)
+    return (
+        os.path.isfile(arg)
+        and os.path.splitext(arg)[1].lower() == ".txt"
+        and get_mrc_file(arg))
 
 
 def argument_organiser(arguments):
@@ -43,8 +45,8 @@ def get_mrc_file(arg, return_data=False):
                 from numpy import genfromtxt
                 location_array = genfromtxt(csvfile, delimiter=",")
         
-        if path.splitext(mrc_path)[1].lower() == ".mrc":
-            if not path.exists(mrc_path):
+        if os.path.splitext(mrc_path)[1].lower() == ".mrc":
+            if not os.path.exists(mrc_path):
                 msg = (
                     "Cannot find %s, so the current directory will be tried",
                     mrc_path)
@@ -59,7 +61,7 @@ def get_mrc_file(arg, return_data=False):
                     # Unix file paths
                     mrc_name = mrc_path.split("/")[-1]
                 else:
-                    mrc_name =  path.basename(mrc_path)
+                    mrc_name =  os.path.basename(mrc_path)
                 mrc_path = txt_path.parent / mrc_name
                 if not mrc_path.exists():
                     if return_data:
@@ -68,7 +70,7 @@ def get_mrc_file(arg, return_data=False):
                     return False
             
             if return_data:
-                return path.abspath(mrc_path), location_array
+                return os.path.abspath(mrc_path), location_array
             return True
         
         elif return_data:
@@ -188,11 +190,10 @@ def _create_lnk_file(shortcut_path):
         print(msg)
         logging.error(msg)
         raise
-    if not dragndrop_bat_file.is_file():
-        raise FileNotFoundError(f"{dragndrop_bat_file} not found!")
     shell = win32com.client.Dispatch("WScript.Shell")
     shortcut = shell.CreateShortCut(str(shortcut_path))
-    shortcut.Targetpath = str(dragndrop_bat_file)
+    shortcut.Targetpath = f'"{executable}"'
+    shortcut.Arguments = "-m stitch_m"
     shortcut.save()
     msg = f"Shortcut created! It can be found here: {shortcut_path}"
     print(msg)

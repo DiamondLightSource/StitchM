@@ -62,12 +62,12 @@ class TestSetupFunctions(unittest.TestCase):
             else:
                 mocked_error.assert_called_once_with("This command is only valid on Windows installations.")
 
+    @unittest.skipUnless(os.name == "nt", "Only run on Windows")
     def test_setup_windows_shortcut_test_created_(self):
         # Only run this test if on Windows
-        if os.name == "nt":
-            test_shortcut_path = Path(".") / "test_shortcut.lnk"
-            _create_lnk_file(test_shortcut_path)
-            link_created = test_shortcut_path.exists()
-            if link_created:
-                os.remove(test_shortcut_path)
-            self.assertTrue(link_created)
+        test_shortcut_path = Path(".") / "test_shortcut.lnk"
+        _create_lnk_file(test_shortcut_path)
+        link_created = test_shortcut_path.exists()
+        if link_created:
+            os.remove(test_shortcut_path)
+        self.assertTrue(link_created)

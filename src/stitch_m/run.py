@@ -27,7 +27,7 @@ def sort_args_then_run():
             if args[0] is not None:
                 if len(args) > 2:
                     args = args[0:2]
-                main_run(config, boolean_config_handler(config, 'PROCESSING', 'filter', default=True), *args)
+                main_run(config, fl_filter=boolean_config_handler(config, 'PROCESSING', 'filter', default=True), *args)
                 if boolean_config_handler(config, 'OTHER', 'wait upon completion', default=False):
                     input("Processing complete! Press enter to exit")
                 return

@@ -1,8 +1,6 @@
-import sys
 import setuptools
 
 from src.stitch_m import __version__, __author__
-from src.stitch_m.file_handler import dragndrop_bat_file
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -14,14 +12,6 @@ requirements=[
     "omexml-dls>=1.1.0",
     "pywin32;platform_system=='Windows'"
     ]
-
-batch_script_string = f"""{sys.executable} -m stitch_m %*
-"""
-
-if dragndrop_bat_file.exists():
-    dragndrop_bat_file.unlink()
-with open(dragndrop_bat_file, "x") as f:
-    f.write(batch_script_string)
 
 setuptools.setup(
     name="StitchM",
