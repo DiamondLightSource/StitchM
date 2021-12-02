@@ -18,7 +18,6 @@ class MetadataMaker():
         self.pixelsize = unstitched.pixel_size
         mosaic_dims = self.__get_mosaic_dims()
         x_position, y_position = self.__get_x_y_position(self.boundaries, mosaic_dims, unstitched.pixel_size)
-        physical_mosaic_dims = [dim * unstitched.pixel_size for dim in mosaic_dims]
         date_time = datetime.datetime.fromtimestamp(unstitched.modified_timestamp).isoformat()  # formatted as: "yyyy-mm-ddThh:mm:ss"
 
         logging.info("Creating OME metadata")
@@ -37,9 +36,9 @@ class MetadataMaker():
         pixels.set_SizeZ(1)
         pixels.set_SizeC(1)
         pixels.set_SizeT(1)
-        pixels.set_PhysicalSizeX(physical_mosaic_dims[0] * 1.e3)
+        pixels.set_PhysicalSizeX(self.pixelsize * 1.e3)
         pixels.set_PhysicalSizeXUnit("nm")
-        pixels.set_PhysicalSizeY(physical_mosaic_dims[1] * 1.e3)
+        pixels.set_PhysicalSizeY(self.pixelsize * 1.e3)
         pixels.set_PhysicalSizeYUnit("nm")
         pixels.set_PhysicalSizeZ(1)  # Z doesn't have corresponding data
         pixels.set_PhysicalSizeZUnit("reference frame")
