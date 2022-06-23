@@ -72,3 +72,4 @@ def cast_to_dtype(image, data_type):
     except Exception:
         logging.error("Invalid data type given: %s aka %s. Saving with default data type.", data_type, dtype)
     return image
+ 

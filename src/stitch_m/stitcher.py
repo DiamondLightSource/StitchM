@@ -92,3 +92,4 @@ class Stitcher():
         if len(good_list) > img_count / 2:
             return good_list
         return full_list
+ 

@@ -258,3 +258,4 @@ def create_Windows_shortcut():
             _create_lnk_file(shortcut_path)
         except Exception:
             logging.error("Failed to create shortcut", exc_info=True)
+  

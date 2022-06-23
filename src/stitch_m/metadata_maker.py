@@ -8,8 +8,7 @@ import oxdls
 from .edge_definer import marker_edge_definer
 
 
-class MetadataMaker():
-
+class MetadataMaker:
     def __init__(self, image_name, unstitched, datatype):
         # Set up attributes and variables
         self.boundaries = unstitched.boundaries
@@ -17,8 +16,12 @@ class MetadataMaker():
         self.pix2edge = unstitched.pix2edge
         self.pixelsize = unstitched.pixel_size
         mosaic_dims = self.__get_mosaic_dims()
-        x_position, y_position = self.__get_x_y_position(self.boundaries, mosaic_dims, unstitched.pixel_size)
-        date_time = datetime.datetime.fromtimestamp(unstitched.modified_timestamp).isoformat()  # formatted as: "yyyy-mm-ddThh:mm:ss"
+        x_position, y_position = self.__get_x_y_position(
+            self.boundaries, mosaic_dims, unstitched.pixel_size
+        )
+        date_time = datetime.datetime.fromtimestamp(
+            unstitched.modified_timestamp
+        ).isoformat()  # formatted as: "yyyy-mm-ddThh:mm:ss"
 
         logging.info("Creating OME metadata")
         self.ox = oxdls.OMEXML()
@@ -36,9 +39,9 @@ class MetadataMaker():
         pixels.set_SizeZ(1)
         pixels.set_SizeC(1)
         pixels.set_SizeT(1)
-        pixels.set_PhysicalSizeX(self.pixelsize * 1.e3)
+        pixels.set_PhysicalSizeX(self.pixelsize * 1.0e3)
         pixels.set_PhysicalSizeXUnit("nm")
-        pixels.set_PhysicalSizeY(self.pixelsize * 1.e3)
+        pixels.set_PhysicalSizeY(self.pixelsize * 1.0e3)
         pixels.set_PhysicalSizeYUnit("nm")
         pixels.set_PhysicalSizeZ(1)  # Z doesn't have corresponding data
         pixels.set_PhysicalSizeZUnit("reference frame")
@@ -63,10 +66,9 @@ class MetadataMaker():
         plane.set_PositionXUnit("nm")
         plane.set_PositionYUnit("nm")
         plane.set_PositionZUnit("reference frame")
-        plane.set_PositionX(x_position * 1.e3)
-        plane.set_PositionY(y_position * 1.e3)
+        plane.set_PositionX(x_position * 1.0e3)
+        plane.set_PositionY(y_position * 1.0e3)
         plane.set_PositionZ(0)
-
 
     def add_markers(self, updated_image_name, markerfile):
         logging.info("Creating ROIs")
@@ -81,10 +83,8 @@ class MetadataMaker():
 
         for count in range(0, no_of_markers, 1):
             start, end = marker_edge_definer(
-               markerlist[count],
-                self.boundaries,
-                self.pix2edge
-                )
+                markerlist[count], self.boundaries, self.pix2edge
+            )
             image.roiref(count).set_ID(marker_numbers[count])
             roi = self.ox.roi(count)
             roi.set_ID(marker_numbers[count])
@@ -134,8 +134,8 @@ class MetadataMaker():
         for count in range(len(array[:, 0])):
             x, y = array[count, 0:2]
             # x is flipped between image and marker coordinates
-            x = ((-x - self.mosaic_centre[0]) / self.pixelsize)
-            y = ((y - self.mosaic_centre[1]) / self.pixelsize)
+            x = (-x - self.mosaic_centre[0]) / self.pixelsize
+            y = (y - self.mosaic_centre[1]) / self.pixelsize
             marker_coordinates.append((int(x), int(y)))
             marker_numbers.append(int(array[count, -1]))
         return marker_coordinates, marker_numbers
@@ -149,6 +149,6 @@ class MetadataMaker():
 
     def __get_mosaic_dims(self):
         # In pixels
-        dim_x = (self.boundaries[1, 0] - self.boundaries[0, 0])
-        dim_y = (self.boundaries[1, 1] - self.boundaries[0, 1])
+        dim_x = self.boundaries[1, 0] - self.boundaries[0, 0]
+        dim_y = self.boundaries[1, 1] - self.boundaries[0, 1]
         return [dim_x, dim_y]

@@ -31,7 +31,7 @@ def main():
         "-u", "--unfiltered", dest="fl_filter",
         default=True, action='store_false',
         help="do not try to filter out fluorescence images")
-
+ 
     setup_subparsers = parser.add_subparsers(title="Setup options", description="enter `StitchM setup -h` for details")
     setup_parser = setup_subparsers.add_parser(name="setup", add_help=False)
     setup_parser.add_argument(

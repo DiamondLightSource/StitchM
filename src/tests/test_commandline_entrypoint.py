@@ -64,7 +64,7 @@ class TestEntryPointCommandline(unittest.TestCase):
             commandline.main()
 
             main_run.assert_called_once_with(ANY, **kwargs)
-
+ 
     def test_commandline_function_with_args_normalise_filter(self, ):
         with patch('stitch_m.run.main_run', MagicMock()) as main_run:
             kwargs = {}
