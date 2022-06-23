@@ -36,3 +36,4 @@ for mos, mar in zip(test_files, test_marker_files):
 
     if path.isfile(output_path):
         remove(output_path)
+ 

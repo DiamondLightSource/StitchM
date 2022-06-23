@@ -53,7 +53,7 @@ expected_marked_outputs = [
     path.replace(".txt", "_marked_expected_output.ome.tiff")
     for path in test_files]
 test_config = Path(__file__).resolve().with_name("config.cfg")
-
+ 
 
 @unittest.skipUnless(base_path.exists(), "base path cannot be accessed")
 class EndToEndTests(unittest.TestCase):

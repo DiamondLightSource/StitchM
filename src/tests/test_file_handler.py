@@ -44,7 +44,7 @@ class FileHandlerTests(unittest.TestCase):
             msg=f"{bad_file.name} {'exists' if bad_file.exists() else 'does not exist'}")
         mocked_logging_info.assert_not_called()
         mocked_logging_warning.assert_not_called()
-
+ 
     @patch("pathlib.Path.open", new_callable=mock_open, read_data=(str(bad_path / mrc_filename) + "\n").encode())
     def test_get_mrc_file_opens_file_bad_path(self, mock_open):
         with test_file.open('rb') as csvfile:

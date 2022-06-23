@@ -38,7 +38,7 @@ class TestLoggerMethods(unittest.TestCase):
             logger.error(error_line)
 
             log_handler.close()
-
+ 
             log_files = tuple(log_dir.glob("*"))
             self.assertEqual(len(log_files), 1)
             for log in log_files:

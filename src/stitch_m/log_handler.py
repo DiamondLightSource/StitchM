@@ -117,3 +117,4 @@ class LogHandler():
                 file_handler.setLevel(file_level)
                 logger.addHandler(file_handler)
         return logger
+ 

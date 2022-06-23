@@ -16,3 +16,4 @@ class TestPackageFunctions(unittest.TestCase):
             args = ["path_to/mosaic.txt", "path_to/markers.txt"]
             stitch_and_save(*args)
             stitch_m_run.assert_called_once_with(ANY, *args)
+ 

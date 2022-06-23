@@ -43,7 +43,7 @@ class NormalisationTests(unittest.TestCase):
                 self.dtype)
         images_out = np.around(images_out, 0).astype(self.dtype)
         assert_array_equal(images_out, expected_images)
-
+ 
     def test_normalise_avoiding_bad_image(self):
         image = np.linspace(524, 5536, 12).reshape(3, 4)
         # "bad_image" has a maximum well out of the stdev of the

@@ -71,3 +71,4 @@ class TestSetupFunctions(unittest.TestCase):
         if link_created:
             os.remove(test_shortcut_path)
         self.assertTrue(link_created)
+ 
