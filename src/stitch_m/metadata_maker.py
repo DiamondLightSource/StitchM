@@ -130,7 +130,7 @@ class MetadataMaker:
         # returns marker coordinates in pixels
         array = np.genfromtxt(markerfile, delimiter=",")
         if array.ndim == 1:
-            array = array[:, np.newaxis]
+            array = array[np.newaxis, :]
         marker_coordinates = []
         marker_numbers = []
         for count in range(len(array[:, 0])):
