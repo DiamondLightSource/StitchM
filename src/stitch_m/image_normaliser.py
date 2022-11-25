@@ -36,16 +36,7 @@ def normalise_to_datatype(images, datatype, trim=True):
 
     logging.info("Re-scaling images to %s", datatype)
     
-    # Move minimum value of all corrected images to 0:
-    np.subtract(images, images.min(), out=images)
-    # Convert values to float and rescale so the maximum
-    # is set by datatype:
-    # New max should be 1 less than the max allowed by datatype
-    # so that the background (max) can be made transparent without losing data
-    new_max = (np.iinfo(datatype).max - 1)
-    multiplier = new_max / images.max()
-    np.multiply(images, multiplier, out=images)
-    return images
+    return np.interp(images, (images.min(), images.max()), (0, np.iinfo(datatype).max - 1))
 
 
 def cast_to_dtype(image, data_type):
