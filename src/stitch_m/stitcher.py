@@ -61,35 +61,50 @@ class Stitcher():
         """
         This returns a list of indices of "good" images (i.e. not fluorescent 
         images).
-        This is based on the min values of fluorescent images being 
-        lower than the (median - std deviation) of the min of all the  
-        images.
+        This is based on the the interquartile range. If this is 0 for either 
+        the min or max exposure values, std will be used instead (to 
+        allow for some close values beyond the IQR).
 
         This method is not valid if there are too many fl images to bf images,
-        as this will affect the median value, leading to few, if any, images 
-        being filtered.
+        as this will affect the IQR.
 
         If more than half of the images are filtered out by this metric,
         it is assumed something hasn't worked correctly and a list including
         of all image indices will be returned.
         """
+
         full_list = range(0, img_count)
 
-        median_min = np.median(minmax[:, 0])
-        std_min = np.std(minmax[:, 0])
+        # First & third quartile
+        q1, q3 = np.percentile(minmax, (25, 75), axis=0)
+        # interquartile range
+        iqr = q3 - q1
 
-        good_list = np.nonzero(
-            minmax[:, 0] > median_min - std_min
-            )[0].tolist()
+        mod = np.where(iqr > 0, iqr * 1.5, np.std(minmax, axis=0))
 
-        if len(good_list) == img_count:
-            logging.info("No potential fluorescence images found.")
+        good_list = np.where(
+            np.logical_and(
+                    minmax[:, 0] >= q1[0] - mod[0],
+                    minmax[:, 1] <= q3[1] + mod[1]
+            )
+        )[0]
+
+        num_good = len(good_list)
+        num_fl = img_count - num_good
+        if num_fl > 0:
+            fl_list = np.setdiff1d(full_list, good_list)
+            list_str = ": '%s' (counted from 0)" % ", ".join(map(str, fl_list))
         else:
+            list_str = ""
+        logging.info(
+            "%i potential fluorescence images identified (and %i brightfield)%s", 
+            num_fl,
+            num_good,
+            list_str,
+        )
+        if num_good < img_count / 2:
             logging.info(
-                "Potential fluorescence images found: '%s' (counted from 0)",
-                ", ".join(map(str, np.setdiff1d(full_list, good_list)))
-                 )
-        if len(good_list) > img_count / 2:
-            return good_list
-        return full_list
- 
+                "Too many fluorescence images 'identified', so no trimming will be performed to avoid false positives"
+            )
+            return full_list
+        return good_list

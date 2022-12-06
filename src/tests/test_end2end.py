@@ -25,6 +25,7 @@ test_files = (
     base_path / "Fid_T2G3_mosaic.txt",
     base_path / "Yo10_G3_mosaic.txt",
     base_path / "PP4_G2_mosaic.txt",
+    base_path / "VG03G1_mosaic.txt",
     )
 
 test_marker_files = (
@@ -34,6 +35,7 @@ test_marker_files = (
     base_path / "Fid_T2G3_markers.txt",
     base_path / "Yo10_G3_mosaic_MARKERS.txt",
     base_path / "PP4_G2_markers.txt",
+    base_path / "VG03G1_markers.txt",
     )
 
 # # Reduced tuple for quick tests:
@@ -81,7 +83,7 @@ class EndToEndTests(unittest.TestCase):
             expected_file = expected_outputs[i]
             expected_image = tf.imread(expected_file)
 
-            assert_array_equal(output_image, expected_image)
+            assert_array_equal(output_image, expected_image, err_msg=f"{test_file} does not match")
 
     @patch('stitch_m.file_handler')
     def test_end2end_with_markers(self, mocked_file_handler):
@@ -101,7 +103,7 @@ class EndToEndTests(unittest.TestCase):
                 expected_image = tif.asarray()
                 expected_metadata = tif.ome_metadata
 
-            assert_array_equal(output_image, expected_image)
+            assert_array_equal(output_image, expected_image, err_msg=f"{test_file} does not match")
             self.assertEqual(
                 output_metadata, expected_metadata,
                 msg=f"Metadata should match for {output_path} & {expected_marked_outputs[i]}\n")
