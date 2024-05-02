@@ -1,8 +1,3 @@
-version_info = (1, 6, 0)
-__version__ = ".".join(str(c) for c in version_info)
-__author__ = "Thomas Fish"
-
-
 def stitch_and_save(mosaic_file, marker_file=None):
     """
     PARAMETERS:

@@ -1,15 +1,14 @@
-/.project
-/.pydevproject
-**/__pycache__
-*.pyc
-/logs
-*/logs
-/workspace.xml
-.idea
+# python generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
 *.egg-info
-.coverage
-htmlcov
-/build
-/dist
+
+# venv
+.venv
+
 *.bat
-venv/
+.coverage
+coverage.xml
