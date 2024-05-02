@@ -5,7 +5,7 @@ import logging
 import argparse
 
 def main():
-    from .info import __version__
+    from .__init__ import __version__
     from .file_handler import get_user_config_path
 
     description = "Stitch mosaics from Cockpit with (or without) ROIs."

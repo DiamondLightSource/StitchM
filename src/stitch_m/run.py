@@ -1,7 +1,7 @@
 import sys
 import logging
 
-from .info import __version__
+from .__init__ import __version__
 
 
 def sort_args_then_run():

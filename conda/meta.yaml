@@ -20,25 +20,22 @@ requirements:
   host:
     - python
     - pip
-    - hatchling
   run:
     - python
-    - numpy >=1.21.1, <2
+    - numpy >=1.21.1
     - tifffile >=2020.9.30
     - mrcfile >=1.1.2
     - omexml-dls >=1.1.0
-    - pywin32  # [win and py<3.9 or python_impl != 'pypy']
+    - pywin32  # [win]
 
 test:
-  requires:
-    - pytest-cov ~=3.0
   imports:
     - {{ import_name }}
-    - win32com.client  # [win and py<3.9 or python_impl != 'pypy']
+    - win32com.client  # [win]
   source_files:
     - src/tests
   commands:
-    - pytest
+    - python -m unittest discover -s src -p "test_*.py" -vv
 
 about:
   home: https://github.com/DiamondLightSource/{{ name }}

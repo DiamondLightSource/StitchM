@@ -1,14 +1,15 @@
-# python generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
+/.project
+/.pydevproject
+**/__pycache__
+*.pyc
+/logs
+*/logs
+/workspace.xml
+.idea
 *.egg-info
-
-# venv
-.venv
-
-*.bat
 .coverage
-coverage.xml
+htmlcov
+/build
+/dist
+*.bat
+venv/
