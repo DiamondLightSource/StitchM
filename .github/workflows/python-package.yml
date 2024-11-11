@@ -41,19 +41,21 @@ jobs:
         name: dist
         path: dist
 
-  pypi:
+  pypi-publish:
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    # Specify the GitHub Environment to publish to
+    environment:
+      name: release
+      url: https://pypi.org/p/StitchM
     # upload to PyPI and make a release on every tag
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     needs: [build]
-
-    runs-on: ubuntu-latest
     permissions:
       # this permission is mandatory for trusted publishing To PyPI
       id-token: write
       # This permission allows the CI to create the release environment
       contents: write
-    # Specify the GitHub Environment to publish to
-    environment: release
 
     steps:
       # download sdist and wheel from dist job
@@ -61,3 +63,5 @@ jobs:
       # publish to PyPI using trusted publishing
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          attestations: false
