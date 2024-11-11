@@ -24,26 +24,21 @@ class TestLoggerMethods(unittest.TestCase):
     def test_logger_without_file(self):
         with TemporaryDirectory(prefix="logs", dir=".") as log_dir:
             log_dir = Path(log_dir)
-            log_handler = TestLoggerMethods.create_logger(log_dir, False)
-            log_files = list(log_dir.glob("*"))
-            log_handler.close()
+            with TestLoggerMethods.create_logger(log_dir, False):
+                log_files = list(log_dir.glob("*"))
             self.assertFalse(log_files)
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_loggers_created(self, mocked_stdout):
         with TemporaryDirectory(prefix="logs_", dir=Path.cwd()) as log_dir:
             log_dir = Path(log_dir).absolute()
-            log_handler = TestLoggerMethods.create_logger(log_dir, True)
-            logger = log_handler.get_logger()
-
-            debug_line = "This is debug info"
-            info_line = "This is info"
-            error_line = "This is an error"
-            logger.debug(debug_line)
-            logger.info(info_line)
-            logger.error(error_line)
-
-            log_handler.close()
+            with TestLoggerMethods.create_logger(log_dir, True) as logger:
+                debug_line = "This is debug info"
+                info_line = "This is info"
+                error_line = "This is an error"
+                logger.debug(debug_line)
+                logger.info(info_line)
+                logger.error(error_line)
 
             log_files = tuple(log_dir.glob("*"))
             self.assertEqual(len(log_files), 1)

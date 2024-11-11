@@ -4,6 +4,8 @@ from pathlib import Path
 import re
 import logging
 
+_logger = logging.getLogger(__package__)
+
 VALID_IMAGE_SUFFIXES = (".mrc", ".dv")
 
 marker_regex = re.compile(r"(.*)marker(.*).txt$", flags=re.I)
@@ -24,7 +26,7 @@ def is_mosaic_file(arg):
 
 
 def argument_organiser(arguments):
-    logging.debug("Testing args: %s", arguments)
+    _logger.debug("Testing args: %s", arguments)
     args_out = [None]
     for arg in arguments:
         if is_marker_file(arg):
@@ -32,13 +34,13 @@ def argument_organiser(arguments):
         elif is_mosaic_file(arg):
             args_out[0] = arg
         else:
-            logging.warning("argument %s is invalid", arg)
-    logging.debug("Returning args: %s", args_out)
+            _logger.warning("argument %s is invalid", arg)
+    _logger.debug("Returning args: %s", args_out)
     return args_out
 
 
 def get_mrc_file(arg, return_data=False):
-    logging.debug("Opening file: %s", arg)
+    _logger.debug("Opening file: %s", arg)
     txt_path = Path(arg)
     if txt_path.is_file():
         with txt_path.open("rb") as csvfile:
@@ -55,9 +57,9 @@ def get_mrc_file(arg, return_data=False):
                     mrc_path,
                 )
                 if return_data:
-                    logging.warning(*msg)
+                    _logger.warning(*msg)
                 else:
-                    logging.debug(*msg)
+                    _logger.debug(*msg)
                 if "\\" in mrc_path:
                     #  Windows file paths
                     mrc_name = mrc_path.split("\\")[-1]
@@ -70,7 +72,7 @@ def get_mrc_file(arg, return_data=False):
                 if not mrc_path.exists():
                     if return_data:
                         raise IOError(f"Cannot find path {mrc_path}")
-                    logging.error("%s cannot be found", mrc_path)
+                    _logger.error("%s cannot be found", mrc_path)
                     return False
 
             if return_data:
@@ -81,11 +83,11 @@ def get_mrc_file(arg, return_data=False):
             raise IOError(
                 f"Expected an mrc file, instead the txt file linked to {mrc_path}"
             )
-        logging.error("Mosaic txt file contains invalid mrc path: %s", mrc_path)
+        _logger.error("Mosaic txt file contains invalid mrc path: %s", mrc_path)
 
     elif return_data:
         raise IOError(f"Mosaic txt file {txt_path} does not exist")
-    logging.error("Invalid txt file: %s", arg)
+    _logger.error("Invalid txt file: %s", arg)
     return False
 
 
@@ -105,7 +107,7 @@ def _get_Windows_home_path():
             return home_path
         except FileNotFoundError:
             pass
-    logging.error(
+    _logger.error(
         "Cannot find valid home path. The following path was found: '%s'", home
     )
     raise FileNotFoundError(
@@ -126,16 +128,16 @@ def get_user_log_path():
             from getpass import getuser
 
             # Makes user only access dir:
-            user_log_path = Path(mkdtemp(prefix=f"stitchm_log_{getuser()}", dir="/tmp"))
+            user_log_path = Path(mkdtemp(prefix=f"stitchm_{getuser()}.log", dir="/tmp"))
             # User can read/write, group can read, others can't access:
             user_log_path.chmod(mode=0o640)
         else:
-            logging.error("Operating system cannot be determined")
+            _logger.error("Operating system cannot be determined")
 
-        logging.info("Creating log files in path %s.", str(user_log_path))
+        _logger.info("Creating log files in path %s.", str(user_log_path))
         return user_log_path
     except Exception:
-        logging.error("Error occurred creating log files", exc_info=True)
+        _logger.error("Error occurred creating log files", exc_info=True)
         return None
 
 
@@ -179,30 +181,30 @@ def create_user_config():
 
     user_config_file, logging_messages = get_user_config_path()
     for message in logging_messages:
-        logging.warning(message)
+        _logger.warning(message)
     if user_config_file is not None:
         try:
             Path.mkdir(user_config_file.parent, parents=False, exist_ok=True)
-            logging.info("Creating user config file in path %s.", str(user_config_file))
+            _logger.info("Creating user config file in path %s.", str(user_config_file))
             copyfile(local_config_file, user_config_file)
-            logging.info(
+            _logger.info(
                 "User config file has been created in %s. This file will override default settings.",
                 str(user_config_file),
             )
         except Exception:
-            logging.error(
+            _logger.error(
                 "Unable to create user config file due to directory issues",
                 exc_info=True,
             )
     else:
-        logging.error("Unable to create user config file")
+        _logger.error("Unable to create user config file")
 
 
 def boolean_config_handler(config, section, key, default):
     try:
         return config.getboolean(section, key, fallback=default)
     except ValueError:
-        logging.error(
+        _logger.error(
             "Invalid '%s' option found, default of '%s' will be used", key, default
         )
         return default
@@ -215,7 +217,7 @@ def _create_lnk_file(shortcut_path):
     except ImportError:
         msg = "win32com of pywin32 cannot be imported! Please run 'pip install pywin32' (with '--user' argument if on a shared python environment) then try again."
         print(msg)
-        logging.error(msg)
+        _logger.error(msg)
         raise
     shell = win32com.client.Dispatch("WScript.Shell")
     shortcut = shell.CreateShortCut(str(shortcut_path))
@@ -224,7 +226,7 @@ def _create_lnk_file(shortcut_path):
     shortcut.save()
     msg = f"Shortcut created! It can be found here: {shortcut_path}"
     print(msg)
-    logging.info(msg)
+    _logger.info(msg)
 
 
 def _get_desktop_path():
@@ -248,12 +250,12 @@ def _get_desktop_path():
     except ImportError:
         msg = "win32com of pywin32 cannot be imported!\nPlease run 'pip install pywin32' (with '--user' argument if on a shared python environment) then try again."
         print(msg)
-        logging.error(msg)
+        _logger.error(msg)
         raise
     try:
         desktop = Path(shell.SHGetFolderPath(0, shellcon.CSIDL_DESKTOP, 0, 0))
     except Exception:
-        logging.warning(
+        _logger.warning(
             "Unable to get desktop path from shell, falling back on environment variables"
         )
         desktop = _get_Windows_home_path() / "Desktop"
@@ -264,29 +266,29 @@ def _get_desktop_path():
 
 def create_Windows_shortcut():
     if os.name != "nt":
-        logging.error("This command is only valid on Windows installations.")
+        _logger.error("This command is only valid on Windows installations.")
         return
     else:
         try:
             # Place link on users desktop
             shortcut_path = _get_desktop_path() / "StitchM.lnk"
             msg = f"Creating shortcut on user desktop: {shortcut_path}"
-            logging.info(msg)
+            _logger.info(msg)
             if shortcut_path.exists():
                 msg = f"StitchM shortcut found:'{shortcut_path}'. Are you sure you want to replace it? (y/N)"
                 user_input = str(input(msg))
-                logging.debug(msg)
-                logging.debug("User input: %s", user_input)
+                _logger.debug(msg)
+                _logger.debug("User input: %s", user_input)
                 if user_input.lower() == "y" or user_input.lower() == "yes":
-                    logging.info("The existing shortcut will be replaced.")
+                    _logger.info("The existing shortcut will be replaced.")
                 elif user_input.lower() == "n" or user_input.lower() == "no":
-                    logging.info("The existing shortcut will not be modified.")
+                    _logger.info("The existing shortcut will not be modified.")
                 else:
-                    logging.info(
+                    _logger.info(
                         "Invalid input: %s. The existing shortcut will not be modified.",
                         user_input,
                     )
                     return
             _create_lnk_file(shortcut_path)
         except Exception:
-            logging.error("Failed to create shortcut", exc_info=True)
+            _logger.error("Failed to create shortcut", exc_info=True)

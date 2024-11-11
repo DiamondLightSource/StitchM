@@ -119,8 +119,8 @@ class LogHandler:
         stream_format = logging.Formatter("%(levelname)-8s %(message)s")
         stream_handler.setFormatter(stream_format)
 
-        logger = logging.getLogger()
-        logger.setLevel(logging.NOTSET)
+        logger = logging.getLogger(__package__)
+        logger.setLevel(logging.DEBUG)
         stream_handler.setLevel(stream_level)
         logger.addHandler(stream_handler)
 
@@ -138,8 +138,9 @@ class LogHandler:
                     logging.error(
                         "Invalid logging level passed. File logging will be set to DEBUG"
                     )
+                log_path = logpath / "stitchm.log"
                 file_handler = TimedRotatingFileHandler(
-                    str(logpath / "stitchm_log"),
+                    str(log_path),
                     when="midnight",
                     interval=1,
                     backupCount=backup_count,

@@ -34,8 +34,8 @@ class FileHandlerTests(unittest.TestCase):
         else:
             print("Cannot run test without access to dls directories")
 
-    @patch("logging.warning")
-    @patch("logging.info")
+    @patch.object(file_handler._logger, "warning")
+    @patch.object(file_handler._logger, "logging.info")
     def test_is_mosaic_file(self, mocked_logging_info, mocked_logging_warning):
         self.assertTrue(
             file_handler.is_mosaic_file(test_file),
