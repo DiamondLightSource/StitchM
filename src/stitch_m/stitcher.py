@@ -1,13 +1,11 @@
 import numpy as np
 import logging
-from numpy.testing import assert_array_equal
 
 from .edge_definer import image_edge_definer
 from .image_normaliser import normalise_to_datatype, cast_to_dtype
 
 
-class Stitcher():
-
+class Stitcher:
     def __init__(self, datatype="uint16"):
         '''Default datatype="uint16"'''
         self.dtype = np.dtype(datatype)
@@ -17,23 +15,29 @@ class Stitcher():
         logging.info("Creating mosaic")
         if unstitched.img_count == unstitched.images.shape[0]:
             if fl_filter:
-                self.brightfield_list = self._find_brightfield_images(unstitched.img_count, unstitched.exposure_minmax)
+                self.brightfield_list = self._find_brightfield_images(
+                    unstitched.img_count, unstitched.exposure_minmax
+                )
             else:
                 self.brightfield_list = [i for i in range(unstitched.img_count)]
             # create new large array and load data into it from mosaic:
-            mosaic_size = (unstitched.boundaries[1, 0] - unstitched.boundaries[0, 0],
-                         unstitched.boundaries[1, 1] - unstitched.boundaries[0, 1])
-            
+            mosaic_size = (
+                unstitched.boundaries[1, 0] - unstitched.boundaries[0, 0],
+                unstitched.boundaries[1, 1] - unstitched.boundaries[0, 1],
+            )
+
             # If we are not normalising, fill with zero values rather than max
             fill_value = np.iinfo(self.dtype).max * normalise
             mosaic_array = np.full(mosaic_size, fill_value, dtype=self.dtype)
-            
-            images = unstitched.images[self.brightfield_list]  # Filter out unwanted images
+
+            images = unstitched.images[
+                self.brightfield_list
+            ]  # Filter out unwanted images
             unstitched.clear_image_array()
             if normalise:
                 # Rescale max/min to fit data type
                 images = normalise_to_datatype(images, self.dtype, trim=True)
-            
+
             # Cast to output data type
             images = cast_to_dtype(images, self.dtype)
 
@@ -41,12 +45,12 @@ class Stitcher():
                 start, end = image_edge_definer(
                     unstitched.pix_positionlist[self.brightfield_list[i], :],
                     unstitched.boundaries,
-                    unstitched.pix2edge
-                    )
+                    unstitched.pix2edge,
+                )
                 # Array needs to be transposed for python versus dv.
                 # This rotates each image so they line up correctly
-                mosaic_array[start[0]:end[0], start[1]:end[1]] = images[i, :, :].T
-            del(images)
+                mosaic_array[start[0] : end[0], start[1] : end[1]] = images[i, :, :].T
+            del images
             # Rotate back and flip
             return np.flip(mosaic_array.T, 0)
         else:
@@ -59,10 +63,10 @@ class Stitcher():
     @staticmethod
     def _find_brightfield_images(img_count, minmax):
         """
-        This returns a list of indices of "good" images (i.e. not fluorescent 
+        This returns a list of indices of "good" images (i.e. not fluorescent
         images).
-        This is based on the the interquartile range. If this is 0 for either 
-        the min or max exposure values, std will be used instead (to 
+        This is based on the the interquartile range. If this is 0 for either
+        the min or max exposure values, std will be used instead (to
         allow for some close values beyond the IQR).
 
         This method is not valid if there are too many fl images to bf images,
@@ -84,8 +88,7 @@ class Stitcher():
 
         good_list = np.where(
             np.logical_and(
-                    minmax[:, 0] >= q1[0] - mod[0],
-                    minmax[:, 1] <= q3[1] + mod[1]
+                minmax[:, 0] >= q1[0] - mod[0], minmax[:, 1] <= q3[1] + mod[1]
             )
         )[0]
 
@@ -97,7 +100,7 @@ class Stitcher():
         else:
             list_str = ""
         logging.info(
-            "%i potential fluorescence images identified (and %i brightfield)%s", 
+            "%i potential fluorescence images identified (and %i brightfield)%s",
             num_fl,
             num_good,
             list_str,

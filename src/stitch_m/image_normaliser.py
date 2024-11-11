@@ -35,8 +35,10 @@ def normalise_to_datatype(images, datatype, trim=True):
         images = images.astype(np.float64)  # Convert to float for rescaling
 
     logging.info("Re-scaling images to %s", datatype)
-    
-    return np.interp(images, (images.min(), images.max()), (0, np.iinfo(datatype).max - 1))
+
+    return np.interp(
+        images, (images.min(), images.max()), (0, np.iinfo(datatype).max - 1)
+    )
 
 
 def cast_to_dtype(image, data_type):
@@ -52,15 +54,24 @@ def cast_to_dtype(image, data_type):
                 if min_clip:
                     logging.warning(
                         "Image min %f below %s minimum of %i, values below this will be cut off",
-                        img_min, dtype, dtype_info.min)
+                        img_min,
+                        dtype,
+                        dtype_info.min,
+                    )
                 if max_clip:
                     logging.warning(
                         "Image max %f above %s maximum of %i, values above this will be cut off",
-                        img_max, dtype, dtype_info.max)
+                        img_max,
+                        dtype,
+                        dtype_info.max,
+                    )
                 np.clip(image, dtype_info.min, dtype_info.max, out=image)
         np.around(image, decimals=0, out=image)
         return image.astype(dtype)
     except Exception:
-        logging.error("Invalid data type given: %s aka %s. Saving with default data type.", data_type, dtype)
+        logging.error(
+            "Invalid data type given: %s aka %s. Saving with default data type.",
+            data_type,
+            dtype,
+        )
     return image
- 
