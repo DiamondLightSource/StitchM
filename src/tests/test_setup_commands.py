@@ -11,6 +11,7 @@ from stitch_m.file_handler import (
     create_Windows_shortcut,
     _create_lnk_file,
     _get_desktop_path,
+    _logger,
 )
 
 
@@ -39,7 +40,7 @@ class TestSetupFunctions(unittest.TestCase):
             )
 
     @patch("stitch_m.file_handler.get_user_config_path")
-    @patch("logging.error")
+    @patch.object(_logger, "error")
     def test_setup_config_fail_bad_path(self, mocked_error_log, mocked_get_config):
         mocked_get_config.return_value = (
             Path(os.path.expanduser("~/.fake_dir/oh_no/thisisbad.cfg")),
@@ -54,7 +55,7 @@ class TestSetupFunctions(unittest.TestCase):
     # Test Windows shortcut setup:
 
     @patch("os.name")
-    @patch("logging.error")
+    @patch.object(_logger, "error")
     def test_setup_win_exits_on_linux(self, mocked_error_log, mocked_os_name):
         mocked_os_name.return_value = "posix"
         create_Windows_shortcut()
@@ -63,7 +64,7 @@ class TestSetupFunctions(unittest.TestCase):
         )
 
     @patch.object(pathlib.Path, "exists", MagicMock(return_value=False))
-    @patch("logging.error")
+    @patch.object(_logger, "error")
     def test_setup_windows_shortcut_function_called(self, mocked_error):
         with patch(
             "stitch_m.file_handler._create_lnk_file", MagicMock()

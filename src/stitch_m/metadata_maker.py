@@ -7,6 +7,8 @@ import oxdls
 
 from .edge_definer import marker_edge_definer
 
+_logger = logging.getLogger(__package__)
+
 
 class MetadataMaker:
     def __init__(self, image_name, unstitched, datatype):
@@ -23,7 +25,7 @@ class MetadataMaker:
             unstitched.modified_timestamp
         ).isoformat()  # formatted as: "yyyy-mm-ddThh:mm:ss"
 
-        logging.info("Creating OME metadata")
+        _logger.info("Creating OME metadata")
         self.ox = oxdls.OMEXML()
         image = self.ox.image()
         image.set_Name(image_name)
@@ -71,7 +73,7 @@ class MetadataMaker:
         plane.set_PositionZ(0)
 
     def add_markers(self, updated_image_name, markerfile):
-        logging.info("Creating ROIs")
+        _logger.info("Creating ROIs")
         markerlist, marker_numbers = self.__extract_markers(markerfile)
 
         no_of_markers = len(marker_numbers)
@@ -123,7 +125,7 @@ class MetadataMaker:
                 return self.ox.to_xml().encode()
             else:
                 return self.ox
-        logging.error("Cannot get metadata that has not yet been created.")
+        _logger.error("Cannot get metadata that has not yet been created.")
         return self.ox
 
     def __extract_markers(self, markerfile):

@@ -4,6 +4,8 @@ import logging
 from .edge_definer import image_edge_definer
 from .image_normaliser import normalise_to_datatype, cast_to_dtype
 
+_logger = logging.getLogger(__package__)
+
 
 class Stitcher:
     def __init__(self, datatype="uint16"):
@@ -12,7 +14,7 @@ class Stitcher:
         self.brightfield_list = []
 
     def make_mosaic(self, unstitched, fl_filter=True, normalise=True):
-        logging.info("Creating mosaic")
+        _logger.info("Creating mosaic")
         if unstitched.img_count == unstitched.images.shape[0]:
             if fl_filter:
                 self.brightfield_list = self._find_brightfield_images(
@@ -54,7 +56,7 @@ class Stitcher:
             # Rotate back and flip
             return np.flip(mosaic_array.T, 0)
         else:
-            logging.error("Number of images doesn't match between files")
+            _logger.error("Number of images doesn't match between files")
             raise AssertionError("Number of images doesn't match between files")
 
     def get_brightfield_list(self):
@@ -99,14 +101,14 @@ class Stitcher:
             list_str = ": '%s' (counted from 0)" % ", ".join(map(str, fl_list))
         else:
             list_str = ""
-        logging.info(
+        _logger.info(
             "%i potential fluorescence images identified (and %i brightfield)%s",
             num_fl,
             num_good,
             list_str,
         )
         if num_good < img_count / 2:
-            logging.info(
+            _logger.info(
                 "Too many fluorescence images 'identified', so no trimming will be performed to avoid false positives"
             )
             return full_list

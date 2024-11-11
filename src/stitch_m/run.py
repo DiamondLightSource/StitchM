@@ -3,6 +3,8 @@ import logging
 
 from .__init__ import __version__
 
+_logger = logging.getLogger(__package__)
+
 
 def sort_args_then_run():
     from .log_handler import LogHandler
@@ -28,9 +30,9 @@ def sort_args_then_run():
 
         config, config_messages = get_config()
         with LogHandler(config=config, config_messages=config_messages):
-            logging.info("StitchM given arguments: %s", argv)
+            _logger.info("StitchM given arguments: %s", argv)
             args = argument_organiser(argv)
-            logging.info("Sorted arguments: %s", args)
+            _logger.info("Sorted arguments: %s", args)
             if args[0] is not None:
                 if len(args) > 2:
                     args = args[0:2]
@@ -47,14 +49,14 @@ def sort_args_then_run():
                     input("Processing complete! Press enter to exit")
                 return
             else:
-                logging.error("No valid mosaic file")
+                _logger.error("No valid mosaic file")
     except IOError:
-        logging.error(
+        _logger.error(
             "Error has occurred while stitching or saving mosaic. Please see traceback for more info.",
             exc_info=True,
         )
     except Exception:
-        logging.error(
+        _logger.error(
             "Unknown error occurred. Please see traceback for more info.", exc_info=True
         )
     if boolean_config_handler(config, "OTHER", "wait upon failure", default=True):
@@ -89,13 +91,13 @@ def _stitch(config, mosaic, markers, normalise, fl_filter):
                 metadata_creator.add_markers(tiff_name, markers)
             return mosaic_array, metadata_creator.get(), str(tiff_path)
         else:
-            logging.error("Mosaic file path cannot be resolved")
+            _logger.error("Mosaic file path cannot be resolved")
             raise IOError("Mosaic file path cannot be resolved")
     except Exception:
         arg_string = ", ".join(
             (str(mosaic or None), str(markers or None), str(normalise))
         )
-        logging.error("Invalid arguments: %s", arg_string, exc_info=True)
+        _logger.error("Invalid arguments: %s", arg_string, exc_info=True)
         if boolean_config_handler(config, "OTHER", "wait upon failure", default=True):
             input("Processing failed! Press enter to exit")
         raise IOError("Invalid arguments: %s", arg_string)
@@ -106,7 +108,7 @@ def _save(mosaic, metadata, tiff_filename):
     from numpy import iinfo, uint32
 
     try:
-        logging.info("Saving %s", tiff_filename)
+        _logger.info("Saving %s", tiff_filename)
         bigtiff = (
             mosaic.size * mosaic.itemsize >= iinfo(uint32).max
         )  # Check if data bigger than 4GB TIFF limit
@@ -119,7 +121,7 @@ def _save(mosaic, metadata, tiff_filename):
                 software=f"StitchM {__version__}",
             )
     except Exception:
-        logging.error("Cannot save: %s", tiff_filename, exc_info=True)
+        _logger.error("Cannot save: %s", tiff_filename, exc_info=True)
         raise IOError("Cannot save: {}".format(tiff_filename))
 
 
@@ -132,7 +134,7 @@ def main_run(config, mosaic, markers=None, normalise=True, fl_filter=True):
 
     The output will be saved as the mosaic filename, with the suffix '.ome.tiff' (or '_marked.ome.tiff' if markers are supplied), in same directory as the mosaic file.
     """
-    logging.info(
+    _logger.info(
         "Running StitchM with arguments: mosaic=%s, markers=%s, normalise=%s, fl_filter=%s",
         mosaic,
         markers,
