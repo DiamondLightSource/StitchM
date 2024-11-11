@@ -8,7 +8,7 @@ authors = [
 dependencies = [
     "tifffile>=2020.9.30",
     "mrcfile>=1.1.2",
-    "numpy~=1.21.1",
+    "numpy>1.24.4",
     "omexml-dls>=1.1.0",
     "pywin32;platform_system=='Windows'",
 ]
