@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 import logging
 
+VALID_IMAGE_SUFFIXES = (".mrc", ".dv")
 
 marker_regex = re.compile(r'(.*)marker(.*).txt$', flags=re.I)
 
@@ -45,7 +46,7 @@ def get_mrc_file(arg, return_data=False):
                 from numpy import genfromtxt
                 location_array = genfromtxt(csvfile, delimiter=",")
         
-        if os.path.splitext(mrc_path)[1].lower() == ".mrc":
+        if os.path.splitext(mrc_path)[1].lower() in VALID_IMAGE_SUFFIXES:
             if not os.path.exists(mrc_path):
                 msg = (
                     "Cannot find %s, so the current directory will be tried",
