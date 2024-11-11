@@ -1,5 +1,5 @@
 [project]
-name = "stitch-m"
+name = "StitchM"
 version = "1.7.0"
 description = "A package for stitching mosaics from Cockpit with (or without) ROIs"
 authors = [
