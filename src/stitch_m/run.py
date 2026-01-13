@@ -87,8 +87,8 @@ def _stitch(config, mosaic, markers, normalise, fl_filter):
                 and Path(markers).is_file()
             ):
                 tiff_name = tiff_path.name.replace(".ome.tiff", "_marked.ome.tiff")
-                tiff_path = tiff_path.parent / tiff_name
-                metadata_creator.add_markers(tiff_name, markers)
+                if metadata_creator.add_markers(tiff_name, markers):
+                    tiff_path = tiff_path.parent / tiff_name
             return mosaic_array, metadata_creator.get(), str(tiff_path)
         else:
             _logger.error("Mosaic file path cannot be resolved")

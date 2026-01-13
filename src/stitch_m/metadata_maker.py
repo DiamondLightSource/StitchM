@@ -2,6 +2,7 @@
 import numpy as np
 import logging
 import datetime
+import warnings
 
 import oxdls
 
@@ -77,6 +78,9 @@ class MetadataMaker:
         markerlist, marker_numbers = self.__extract_markers(markerfile)
 
         no_of_markers = len(marker_numbers)
+        if no_of_markers == 0:
+            _logger.info("No markers were found in '%s'", markerfile)
+            return False
 
         image = self.ox.image(0)
         image.set_Name(updated_image_name)
@@ -119,6 +123,8 @@ class MetadataMaker:
             rectangle.set_Width(end[0] - start[0])
             rectangle.set_Height(end[1] - start[1])
 
+        return True
+
     def get(self, encoded=False):
         if self.ox is not None:
             if encoded:
@@ -130,12 +136,17 @@ class MetadataMaker:
 
     def __extract_markers(self, markerfile):
         # returns marker coordinates in pixels
-        array = np.genfromtxt(markerfile, delimiter=",")
-        if array.ndim == 1:
+        with warnings.catch_warnings(): # silence warning of empty file
+            warnings.simplefilter("ignore", UserWarning)
+            array = np.genfromtxt(markerfile, delimiter=",")
+
+        if array.size == 0:
+            array.shape = (0,0)
+        elif array.ndim == 1:
             array = array[np.newaxis, :]
         marker_coordinates = []
         marker_numbers = []
-        for count in range(len(array[:, 0])):
+        for count in range(array.shape[0]):
             x, y = array[count, 0:2]
             # x is flipped between image and marker coordinates
             x = (-x - self.mosaic_centre[0]) / self.pixelsize

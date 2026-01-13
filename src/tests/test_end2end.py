@@ -40,6 +40,11 @@ test_marker_files = (
     base_path / "VG03G1_markers.txt",
 )
 
+nonmarker_files = (
+    base_path / "empty_markers.txt",
+    base_path / "blank_markers.txt",
+)
+
 # # Reduced tuple for quick tests:
 # test_files = (
 #     base_path / "Fid_T2G3_mosaic.txt",
@@ -83,6 +88,17 @@ class EndToEndTests(unittest.TestCase):
 
             expected_file = expected_outputs[i]
             expected_image = tf.imread(expected_file)
+
+            assert_array_equal(
+                output_image, expected_image, err_msg=f"{test_file} does not match"
+            )
+        for marker in nonmarker_files:
+            output_path = test_file.replace(".txt", ".ome.tiff")
+            if os.path.isfile(output_path):
+                os.remove(output_path)
+            stitch_and_save(test_file, marker)
+            self.assertTrue(os.path.isfile(output_path), msg=f"{output_path} not found")
+            output_image = tf.imread(output_path)
 
             assert_array_equal(
                 output_image, expected_image, err_msg=f"{test_file} does not match"
