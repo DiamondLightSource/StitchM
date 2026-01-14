@@ -32,7 +32,8 @@ jobs:
     - name: Lint with ruff
       uses: astral-sh/ruff-action@v1
     - name: Test
-      run: uv run pytest
+      # w/o test files, coverage is lower than in pyproject.toml
+      run: uv run pytest --cov-fail-under=39
     - name: Build sdist and wheel
       run: uv build
     - name: Upload sdist and wheel as artifacts
