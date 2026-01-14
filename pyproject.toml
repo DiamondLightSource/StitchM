@@ -1,6 +1,6 @@
 [project]
 name = "StitchM"
-version = "1.7.0"
+version = "1.7.1"
 description = "A package for stitching mosaics from Cockpit with (or without) ROIs"
 authors = [
     { name = "Thomas Fish", email = "thomas.fish@diamond.ac.uk" },
@@ -36,8 +36,8 @@ requires = [
 ]
 build-backend = "hatchling.build"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "pytest-cov>=3.0.0",
     "ruff>=0.7.3",
 ]
