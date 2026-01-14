@@ -32,7 +32,7 @@ jobs:
     - name: Lint with ruff
       uses: astral-sh/ruff-action@v1
     - name: Test
-      run: uv run --frozen -m unittest discover -s src -p "test_*.py"
+      run: uv run pytest
     - name: Build sdist and wheel
       run: uv build
     - name: Upload sdist and wheel as artifacts
